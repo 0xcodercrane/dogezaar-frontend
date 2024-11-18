@@ -10,7 +10,7 @@ export default function Steps({
 }) {
   return (
     <div className='my-5'>
-      <div className='flex gap-4 align-center justify-center text-[36px]'>
+      <div className='flex gap-4 align-center justify-center text-[24px]'>
         <div
           className={`flex items-center gap-2 cursor-pointer ${
             currentStep >= ESteps.START && 'text-white'

@@ -1,4 +1,5 @@
 import { Container } from './Container'
+import Button from './UI/Button'
 
 export default function Header() {
   return (
@@ -8,9 +9,7 @@ export default function Header() {
           <div className='text-lg font-bold text-[36px]'>
             <h1>Doginal Bot</h1>
           </div>
-          <div className='border-2 rounded-md border-primary px-3 py-2'>
-            <button>Connect Wallet</button>
-          </div>
+          <Button content='Connect Wallet' />
         </div>
       </Container>
     </header>
