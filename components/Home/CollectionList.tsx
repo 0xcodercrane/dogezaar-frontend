@@ -22,9 +22,9 @@ export default function CollectionList({
 
   return (
     <div className='p-6'>
-      <div className='my-10 flex justify-between items-center'>
-        <h2 className='font-bold text-4xl'>Recent Collections</h2>
-        <div className='w-[30%] flex gap-2 justify-end'>
+      <div className='my-10 flex flex-col justify-between md:flex-row items-center'>
+        <h2 className='font-bold w-full md:w-[30%] text-4xl'>Recent Collections</h2>
+        <div className='w-full md:w-[30%] flex gap-2 justify-start md:justify-end'>
           {floorPeriodLists.map((item, index) => (
             <span
               className={`${
@@ -41,13 +41,13 @@ export default function CollectionList({
         </div>
       </div>
       <div className='flex flex-wrap text-right font-bold text-xl'>
-        <div className='w-[2%] pr-2'>#</div>
-        <div className='w-[33%] text-left'>Collection</div>
-        <div className='w-[10%]'>Floor</div>
-        <div className='w-[10%]'>Floor {floorPeriod}%</div>
-        <div className='w-[15%]'>Volume</div>
-        <div className='w-[15%]'>Sales</div>
-        <div className='w-[15%]'>Listing</div>
+        <div className='w-[2%] hidden sm:block pr-2'>#</div>
+        <div className='w-[57%] sm:w-[33%] text-left'>Collection</div>
+        <div className='w-[15%] sm:w-[10%]'>Floor</div>
+        <div className='w-[10%] hidden sm:block'>Floor {floorPeriod}%</div>
+        <div className='w-[15%] hidden sm:block'>Volume</div>
+        <div className='w-[15%] hidden sm:block'>Sales</div>
+        <div className='w-[25%] sm:w-[15%]'>Listing</div>
       </div>
       {collections.length > 0
         ? collections
