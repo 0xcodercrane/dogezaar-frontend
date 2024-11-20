@@ -4,9 +4,9 @@ import Image from 'next/image'
 export default function CollectionListItem(props: { collection: TCollection }) {
   const { collection } = props
   return (
-    <div className='flex flex-wrap items-center text-right my-2 py-2 pr-2 cursor-pointer  hover:bg-primary-DEFUAULT bg-transparent'>
-      <div className='w-[5%] pr-2'>{collection.id}</div>
-      <div className='w-[30%] text-left flex items-center gap-2'>
+    <div className='flex flex-wrap items-center text-right my-2 py-2 pr-2 cursor-pointer  hover:bg-primary-DEFUAULT bg-transparent rounded-md'>
+      <div className='w-[2%] pr-2'>{collection.id}</div>
+      <div className='w-[33%] text-left flex items-center gap-2'>
         <Image
           alt={collection.name}
           width={0}
