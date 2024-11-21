@@ -147,7 +147,7 @@ export default function Forms() {
         <div className='bg-primary-DEFUAULT p-8 grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:gap-8'>
           <div>
             <div className='flex flex-col gap-4 border-solid'>
-              <p className='text-[#00ff2dc7] font-bold text-2xl bg-primary-DEFUAULT'>
+              <p className='text-[#999] font-bold text-2xl bg-primary-DEFUAULT'>
                 Collection Information
               </p>
               <informationForm.Field
@@ -161,7 +161,7 @@ export default function Forms() {
                     <div className='flex flex-col gam-1'>
                       <label
                         htmlFor={name}
-                        className='px-2 text-[#00ff2dc7] font-bold'
+                        className='px-2 text-[#999] font-bold'
                       >
                         Collection Name
                       </label>
@@ -190,7 +190,7 @@ export default function Forms() {
                     <div className='flex flex-col gam-1'>
                       <label
                         htmlFor={name}
-                        className='px-2 text-[#00ff2dc7] font-bold'
+                        className='px-2 text-[#999] font-bold'
                       >
                         Collection Description
                       </label>
@@ -225,7 +225,7 @@ export default function Forms() {
                         <div className='flex flex-col gap-3'>
                           <label
                             htmlFor={name}
-                            className='px-2 text-[#00ff2dc7] font-bold'
+                            className='px-2 text-[#999] font-bold'
                           >
                             Collection Thumbnail Image
                           </label>
@@ -263,7 +263,7 @@ export default function Forms() {
                         <div className='flex flex-col gap-3'>
                           <label
                             htmlFor={name}
-                            className='px-2 text-[#00ff2dc7] font-bold'
+                            className='px-2 text-[#999] font-bold'
                           >
                             Collection Banner Image
                           </label>
@@ -291,7 +291,7 @@ export default function Forms() {
           </div>
           <div className='flex flex-col gap-4'>
             <div className='flex flex-col gap-4'>
-              <p className='text-[#00ff2dc7] font-bold text-2xl bg-primary-DEFUAULT'>
+              <p className='text-[#999] font-bold text-2xl bg-primary-DEFUAULT'>
                 Creator Details
               </p>
               <div className='flex gap-4'>
@@ -306,7 +306,7 @@ export default function Forms() {
                       <div className='flex flex-col w-1/2'>
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#00ff2dc7] font-bold'
+                          className='px-2 text-[#999] font-bold'
                         >
                           Creator Name
                         </label>
@@ -334,7 +334,7 @@ export default function Forms() {
                       <div className='flex flex-col w-1/2'>
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#00ff2dc7] font-bold'
+                          className='px-2 text-[#999] font-bold'
                         >
                           Creator email
                         </label>
@@ -365,7 +365,7 @@ export default function Forms() {
                     <div>
                       <label
                         htmlFor={name}
-                        className='px-2 text-[#00ff2dc7] font-bold'
+                        className='px-2 text-[#999] font-bold'
                       >
                         Creator BRC20 address
                       </label>
@@ -384,7 +384,7 @@ export default function Forms() {
               />
             </div>
             <div className='flex flex-col gap-4'>
-              <p className='text-[#00ff2dc7] font-bold text-2xl bg-primary-DEFUAULT'>
+              <p className='text-[#999] font-bold text-2xl bg-primary-DEFUAULT'>
                 Creator Social Handles
               </p>
               <informationForm.Field
@@ -399,7 +399,7 @@ export default function Forms() {
                     <div className='flex flex-col gap-3'>
                       <label
                         htmlFor={name}
-                        className='px-2 text-[#00ff2dc7] font-bold'
+                        className='px-2 text-[#999] font-bold'
                       >
                         Website
                       </label>
@@ -430,7 +430,7 @@ export default function Forms() {
                       <div className='flex flex-col w-1/2'>
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#00ff2dc7] font-bold'
+                          className='px-2 text-[#999] font-bold'
                         >
                           Discord Link
                         </label>
@@ -461,7 +461,7 @@ export default function Forms() {
                       <div className='flex flex-col w-1/2'>
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#00ff2dc7] font-bold'
+                          className='px-2 text-[#999] font-bold'
                         >
                           Twitter
                         </label>
@@ -493,7 +493,7 @@ export default function Forms() {
                       <div className='flex flex-col w-1/2'>
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#00ff2dc7] font-bold'
+                          className='px-2 text-[#999] font-bold'
                         >
                           Telegram
                         </label>
@@ -523,7 +523,7 @@ export default function Forms() {
                       <div className='flex flex-col w-1/2'>
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#00ff2dc7] font-bold'
+                          className='px-2 text-[#999] font-bold'
                         >
                           Instagram
                         </label>
@@ -552,7 +552,7 @@ export default function Forms() {
                 const { handleChange } = field
                 return (
                   <div className='flex flex-col mt-5 gap-3'>
-                    <p className='text-[#00ff2dc7] font-bold text-2xl bg-primary-DEFUAULT'>
+                    <p className='text-[#999] font-bold text-2xl bg-primary-DEFUAULT'>
                       Collection Images
                     </p>
                     <p>Add your collection image .zip file below.</p>
