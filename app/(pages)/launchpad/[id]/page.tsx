@@ -27,7 +27,7 @@ export default function LaunchPad({ params }: { params: { url: string } }) {
     <div className='bg-background my-[100px] pt-[100px] flex items-center'>
       <div className='w-full flex justify-center'>
           <div className='grid w-3/4 md:w-1/2 grid-cols-1 px-8 md:grid-cols-2 gap-20'>
-            <div className='w-full h-[400px] sm:h-[600px] bg-primary-DEFUAULT rounded-md overflow-hidden'>
+            <div className='w-full h-[400px] sm:h-[500px] bg-primary-DEFUAULT rounded-md overflow-hidden'>
               <Image
                 src='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0'
                 width={100}
