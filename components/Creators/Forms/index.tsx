@@ -1,99 +1,99 @@
-import { useState } from 'react'
-import { FileUpload } from '@/components/Forms/FileUpload'
-import Button from '@/components/UI/Button'
-import * as v from 'valibot'
-import { useForm } from '@tanstack/react-form'
-import { valibotValidator } from '@tanstack/valibot-form-adapter'
-import FieldInfo from './FieldInfo'
+import { FileUpload } from "@/components/Forms/FileUpload";
+import * as v from "valibot";
+import { useForm } from "@tanstack/react-form";
+import { valibotValidator } from "@tanstack/valibot-form-adapter";
+import FieldInfo from "./FieldInfo";
 
 export const informationSchema = v.object({
   name: v.pipe(
     v.string(),
     v.trim(),
-    v.minLength(3, 'Collection name must be at least 3 characters.')
+    v.minLength(3, "Collection name must be at least 3 characters.")
   ),
   description: v.pipe(
     v.string(),
     v.trim(),
-    v.minLength(20, 'Collection description must be at least 20 characters.')
+    v.minLength(20, "Collection description must be at least 20 characters.")
   ),
-  price: v.pipe(
-    v.string(),
-    v.trim(),
-    v.nonEmpty('Price can not be empty')
-  ),
+  price: v.pipe(v.string(), v.trim(), v.nonEmpty("Price can not be empty")),
   totalSupply: v.pipe(
     v.string(),
     v.trim(),
-    v.nonEmpty('Total supply can not be empty')
+    v.nonEmpty("Total supply can not be empty")
   ),
   website: v.pipe(
     v.string(),
     v.trim(),
-    v.url('Please enter a valid URL for the website.')
+    v.url("Please enter a valid URL for the website.")
   ),
   xHandle: v.pipe(
     v.string(),
     v.trim(),
     v.startsWith(
-      'https://x.com',
-      'Please enter a valid X handle (e.g., https://x.com/username).'
+      "https://x.com",
+      "Please enter a valid X handle (e.g., https://x.com/username)."
     )
   ),
-  discordHandle: v.optional(v.pipe(v.string(), v.trim()), ''),
-  telegramHandle: v.optional(v.pipe(v.string(), v.trim()), ''),
-  instagramHandle: v.optional(v.pipe(v.string(), v.trim()), ''),
+  discordHandle: v.optional(v.pipe(v.string(), v.trim()), ""),
+  telegramHandle: v.optional(v.pipe(v.string(), v.trim()), ""),
+  instagramHandle: v.optional(v.pipe(v.string(), v.trim()), ""),
   creatorName: v.pipe(
     v.string(),
     v.trim(),
     v.minLength(
       3,
-      'Creator name is required and must be at least 3 characters.'
+      "Creator name is required and must be at least 3 characters."
     )
   ),
   creatorEmail: v.pipe(
     v.string(),
-    v.email('Please enter a valid email address.')
+    v.email("Please enter a valid email address.")
   ),
   creatorDOGEAddress: v.pipe(
     v.string(),
     v.trim(),
-    v.nonEmpty('Creator DOGE address can not be empty')
+    v.nonEmpty("Creator DOGE address can not be empty")
   ),
   thumbnail: v.pipe(
-    v.file('A thumbnail image file is required.'),
+    v.file("A thumbnail image file is required."),
     v.mimeType(
-      ['image/jpeg', 'image/png'],
-      'Thumbnail must be a JPEG or PNG file.'
+      ["image/jpeg", "image/png"],
+      "Thumbnail must be a JPEG or PNG file."
     ),
-    v.maxSize(1024 * 1024, 'Thumbnail must be smaller than 1 MB.')
+    v.maxSize(1024 * 1024, "Thumbnail must be smaller than 1 MB.")
   ),
   banner: v.pipe(
-    v.file('A banner image file is required.'),
+    v.file("A banner image file is required."),
     v.mimeType(
-      ['image/jpeg', 'image/png'],
-      'Banner must be a JPEG or PNG file.'
+      ["image/jpeg", "image/png"],
+      "Banner must be a JPEG or PNG file."
     ),
-    v.maxSize(1024 * 1024, 'Banner must be smaller than 1 MB.')
+    v.maxSize(1024 * 1024, "Banner must be smaller than 1 MB.")
   ),
   imageFile: v.pipe(
-    v.file('A image file is required'),
+    v.file("A image file is required"),
     v.mimeType(
       [
-        'application/zip',
-        'application/x-zip-compressed',
-        'multipart/x-zip',
-        'application/x-compressed',
+        "application/zip",
+        "application/x-zip-compressed",
+        "multipart/x-zip",
+        "application/x-compressed",
       ],
-      'Image file must be a Zip file.'
+      "Image file must be a Zip file."
     )
   ),
-})
+});
 
-export type TInformationSchema = v.InferInput<typeof informationSchema>
+export type TInformationSchema = v.InferInput<typeof informationSchema>;
 
 export default function Forms() {
-  const imageValidator = async (width: number, height: number, value: File, title: string, size: number) => {
+  const imageValidator = async (
+    width: number,
+    height: number,
+    value: File,
+    title: string,
+    size: number
+  ) => {
     const maxFileSize = size * 1024 * 1024;
 
     if (!value.size) {
@@ -105,12 +105,14 @@ export default function Forms() {
     }
 
     const isValidRatio = await new Promise<boolean>((resolve) => {
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.onload = () => {
         const imageWidth = img.width;
         const imageHeight = img.height;
 
-        const isCloseEnough = Math.abs(imageWidth - width) <= 200 && Math.abs(imageHeight - height) <= 200;
+        const isCloseEnough =
+          Math.abs(imageWidth - width) <= 200 &&
+          Math.abs(imageHeight - height) <= 200;
         resolve(isCloseEnough);
       };
       img.onerror = () => resolve(false);
@@ -127,21 +129,21 @@ export default function Forms() {
   const informationForm = useForm({
     onSubmit: async ({ value }: { value: TInformationSchema }) => {
       try {
-        console.log(value)
-        v.parse(informationSchema, value)
+        console.log(value);
+        v.parse(informationSchema, value);
       } catch (error) {
-        console.log('Submission error:', error)
+        console.log("Submission error:", error);
       }
     },
     validatorAdapter: valibotValidator(),
-  })
+  });
 
   async function validateDOGEAddress(address: string) {
-    const dogecoinAddressRegex = /^D[1-9A-HJ-NP-Za-km-z]{25,34}$/
-    const isValidFormat = dogecoinAddressRegex.test(address)
-    console.log(address)
+    const dogecoinAddressRegex = /^D[1-9A-HJ-NP-Za-km-z]{25,34}$/;
+    const isValidFormat = dogecoinAddressRegex.test(address);
+    console.log(address);
     if (!isValidFormat) {
-      return 'Invalid DOGE address'
+      return "Invalid DOGE address";
     }
   }
 
@@ -149,156 +151,162 @@ export default function Forms() {
     <div>
       <form
         onSubmit={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          informationForm.handleSubmit()
+          e.preventDefault();
+          e.stopPropagation();
+          informationForm.handleSubmit();
         }}
       >
-        <div className='bg-primary-DEFUAULT p-8 grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:gap-8'>
+        <div className="bg-primary-DEFUAULT p-8 grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:gap-8">
           <div>
-            <div className='flex flex-col gap-4 border-solid'>
-              <p className='text-[#999] font-bold text-2xl bg-primary-DEFUAULT'>
+            <div className="flex flex-col gap-4 border-solid">
+              <p className="text-[#999] font-bold text-2xl bg-primary-DEFUAULT">
                 Collection Information
               </p>
               <informationForm.Field
-                name='name'
+                name="name"
                 validators={{
                   onChange: informationSchema.entries.name,
                 }}
                 children={(field: any) => {
-                  const { state, name, handleBlur, handleChange } = field
+                  const { state, name, handleBlur, handleChange } = field;
                   return (
-                    <div className='flex flex-col gam-1'>
+                    <div className="flex flex-col gam-1">
                       <label
                         htmlFor={name}
-                        className='px-2 text-[#999] font-bold'
+                        className="px-2 text-[#999] font-bold"
                       >
                         Collection Name
                       </label>
                       <input
                         id={name}
-                        value={state.value || ''}
-                        placeholder='Collection Name'
-                        type='text'
-                        className='w-full border-none bg-black rounded-md p-3 outline-none'
+                        value={state.value || ""}
+                        placeholder="Collection Name"
+                        type="text"
+                        className="w-full border-none bg-black rounded-md p-3 outline-none"
                         onBlur={handleBlur}
                         onChange={(e) => handleChange(e.target.value)}
                       />
                       <FieldInfo field={field} />
                     </div>
-                  )
+                  );
                 }}
               />
               <informationForm.Field
-                name='description'
+                name="description"
                 validators={{
                   onChange: informationSchema.entries.description,
                 }}
                 children={(field: any) => {
-                  const { state, name, handleBlur, handleChange } = field
+                  const { state, name, handleBlur, handleChange } = field;
                   return (
-                    <div className='flex flex-col gam-1'>
+                    <div className="flex flex-col gam-1">
                       <label
                         htmlFor={name}
-                        className='px-2 text-[#999] font-bold'
+                        className="px-2 text-[#999] font-bold"
                       >
                         Collection Description
                       </label>
                       <textarea
                         id={name}
-                        value={state.value || ''}
-                        placeholder='collection description...'
+                        value={state.value || ""}
+                        placeholder="collection description..."
                         onBlur={handleBlur}
                         onChange={(e) => handleChange(e.target.value)}
                         cols={30}
                         rows={2}
-                        className='w-full border-none bg-black rounded-md p-3 outline-none'
+                        className="w-full border-none bg-black rounded-md p-3 outline-none"
                       ></textarea>
                       <FieldInfo field={field} />
                     </div>
-                  )
+                  );
                 }}
               />
-              <div className='flex gap-4'>
+              <div className="flex gap-4">
                 <informationForm.Field
-                  name='price'
+                  name="price"
                   validators={{
                     onChange: informationSchema.entries.price,
                   }}
                   children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field
+                    const { state, name, handleBlur, handleChange } = field;
 
                     return (
-                      <div className='flex flex-col w-1/2'>
+                      <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#999] font-bold'
+                          className="px-2 text-[#999] font-bold"
                         >
                           Price
                         </label>
                         <input
-                          type='text'
+                          type="text"
                           id={name}
-                          value={state.value || ''}
-                          placeholder=''
-                          className='w-full border-none bg-black rounded-md p-3 outline-none'
+                          value={state.value || ""}
+                          placeholder=""
+                          className="w-full border-none bg-black rounded-md p-3 outline-none"
                           onBlur={handleBlur}
                           onChange={(e) => handleChange(e.target.value)}
                         />
                         <FieldInfo field={field} />
                       </div>
-                    )
+                    );
                   }}
                 />
 
                 <informationForm.Field
-                  name='totalSupply'
+                  name="totalSupply"
                   validators={{
                     onChange: informationSchema.entries.totalSupply,
                   }}
                   children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field
+                    const { state, name, handleBlur, handleChange } = field;
 
                     return (
-                      <div className='flex flex-col w-1/2'>
+                      <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#999] font-bold'
+                          className="px-2 text-[#999] font-bold"
                         >
                           Total Supply
                         </label>
                         <input
-                          type='text'
-                          value={state.value || ''}
+                          type="text"
+                          value={state.value || ""}
                           id={name}
-                          className='w-full border-none bg-black rounded-md p-3 outline-none'
-                          placeholder=''
+                          className="w-full border-none bg-black rounded-md p-3 outline-none"
+                          placeholder=""
                           onBlur={handleBlur}
                           onChange={(e) => handleChange(e.target.value)}
                         />
                         <FieldInfo field={field} />
                       </div>
-                    )
+                    );
                   }}
                 />
               </div>
-              <div className='flex flex-col gap-4'>
+              <div className="flex flex-col gap-4">
                 <informationForm.Field
-                  name='thumbnail'
+                  name="thumbnail"
                   validators={{
                     onChangeAsync: async ({ value }: { value: File }) => {
-                      return await imageValidator(1000, 1000, value, 'Thumbnail', 1);
-                    }
+                      return await imageValidator(
+                        1000,
+                        1000,
+                        value,
+                        "Thumbnail",
+                        1
+                      );
+                    },
                   }}
                   children={(field: any) => {
-                    const { name, handleChange } = field
+                    const { name, handleChange } = field;
 
                     return (
                       <div>
-                        <div className='flex flex-col gap-3'>
+                        <div className="flex flex-col gap-3">
                           <label
                             htmlFor={name}
-                            className='px-2 text-[#999] font-bold'
+                            className="px-2 text-[#999] font-bold"
                           >
                             Collection Thumbnail Image
                           </label>
@@ -307,36 +315,42 @@ export default function Forms() {
                             represent your collection and appear in previews and
                             listings. Recommended size: 1000x1000px.
                           </p>
-                          <div className='p-3 rounded-md border-[1px] border-[#5d5959]'>
+                          <div className="p-3 rounded-md border-[1px] border-[#5d5959]">
                             <FileUpload
-                              acceptFileType={['image/*']}
-                              accept={['.jpg', 'jpeg', '.png']}
-                              size='lg'
+                              acceptFileType={["image/*"]}
+                              accept={[".jpg", "jpeg", ".png"]}
+                              size="lg"
                               setData={handleChange}
                             />
                           </div>
                           <FieldInfo field={field} />
                         </div>
                       </div>
-                    )
+                    );
                   }}
                 />
                 <informationForm.Field
-                  name='banner'
+                  name="banner"
                   validators={{
                     onChangeAsync: async ({ value }: { value: File }) => {
-                      return await imageValidator(1920, 1200, value, 'Banner', 1);
-                    }
+                      return await imageValidator(
+                        1920,
+                        1200,
+                        value,
+                        "Banner",
+                        1
+                      );
+                    },
                   }}
                   children={(field: any) => {
-                    const { name, handleChange } = field
+                    const { name, handleChange } = field;
 
                     return (
                       <div>
-                        <div className='flex flex-col gap-3'>
+                        <div className="flex flex-col gap-3">
                           <label
                             htmlFor={name}
-                            className='px-2 text-[#999] font-bold'
+                            className="px-2 text-[#999] font-bold"
                           >
                             Collection Banner Image
                           </label>
@@ -345,306 +359,306 @@ export default function Forms() {
                             at the top of your collection page. Recommended
                             size: 1920x1200px.
                           </p>
-                          <div className='p-3 rounded-md border-[1px] border-[#5d5959]'>
+                          <div className="p-3 rounded-md border-[1px] border-[#5d5959]">
                             <FileUpload
-                              acceptFileType={['image/*']}
-                              accept={['.jpg', 'jpeg', '.png']}
-                              size='lg'
+                              acceptFileType={["image/*"]}
+                              accept={[".jpg", "jpeg", ".png"]}
+                              size="lg"
                               setData={handleChange}
                             />
                           </div>
                           <FieldInfo field={field} />
                         </div>
                       </div>
-                    )
+                    );
                   }}
                 />
               </div>
             </div>
           </div>
-          <div className='flex flex-col gap-4'>
-            <div className='flex flex-col gap-4'>
-              <p className='text-[#999] font-bold text-2xl bg-primary-DEFUAULT'>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
+              <p className="text-[#999] font-bold text-2xl bg-primary-DEFUAULT">
                 Creator Details
               </p>
-              <div className='flex gap-4'>
+              <div className="flex gap-4">
                 <informationForm.Field
-                  name='creatorName'
+                  name="creatorName"
                   validators={{
                     onChange: informationSchema.entries.creatorName,
                   }}
                   children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field
+                    const { state, name, handleBlur, handleChange } = field;
                     return (
-                      <div className='flex flex-col w-1/2'>
+                      <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#999] font-bold'
+                          className="px-2 text-[#999] font-bold"
                         >
                           Creator Name
                         </label>
                         <input
                           id={name}
-                          value={state.value || ''}
+                          value={state.value || ""}
                           onBlur={handleBlur}
                           onChange={(e) => handleChange(e.target.value)}
-                          type='text'
-                          className='w-full border-none bg-black rounded-md p-3 outline-none'
+                          type="text"
+                          className="w-full border-none bg-black rounded-md p-3 outline-none"
                         />
                         <FieldInfo field={field} />
                       </div>
-                    )
+                    );
                   }}
                 />
                 <informationForm.Field
-                  name='creatorEmail'
+                  name="creatorEmail"
                   validators={{
                     onChange: informationSchema.entries.creatorEmail,
                   }}
                   children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field
+                    const { state, name, handleBlur, handleChange } = field;
                     return (
-                      <div className='flex flex-col w-1/2'>
+                      <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#999] font-bold'
+                          className="px-2 text-[#999] font-bold"
                         >
                           Creator email
                         </label>
                         <input
                           id={name}
-                          value={state.value || ''}
+                          value={state.value || ""}
                           onBlur={handleBlur}
                           onChange={(e) => handleChange(e.target.value)}
-                          type='text'
-                          className='w-full border-none bg-black rounded-md p-3 outline-none'
+                          type="text"
+                          className="w-full border-none bg-black rounded-md p-3 outline-none"
                         />
                         <FieldInfo field={field} />
                       </div>
-                    )
+                    );
                   }}
                 />
               </div>
               <informationForm.Field
-                name='creatorDOGEAddress'
+                name="creatorDOGEAddress"
                 validators={{
                   onChangeAsync: async ({ value }: { value: string }) => {
-                    return await validateDOGEAddress(value)
+                    return await validateDOGEAddress(value);
                   },
                 }}
                 children={(field: any) => {
-                  const { state, name, handleBlur, handleChange } = field
+                  const { state, name, handleBlur, handleChange } = field;
                   return (
                     <div>
                       <label
                         htmlFor={name}
-                        className='px-2 text-[#999] font-bold'
+                        className="px-2 text-[#999] font-bold"
                       >
                         Creator BRC20 address
                       </label>
                       <input
                         id={name}
-                        value={state.value || ''}
+                        value={state.value || ""}
                         onBlur={handleBlur}
                         onChange={(e) => handleChange(e.target.value)}
-                        type='text'
-                        className='w-full border-none bg-black rounded-md p-3 outline-none'
+                        type="text"
+                        className="w-full border-none bg-black rounded-md p-3 outline-none"
                       />
                       <FieldInfo field={field} />
                     </div>
-                  )
+                  );
                 }}
               />
             </div>
-            <div className='flex flex-col gap-4'>
-              <p className='text-[#999] font-bold text-2xl bg-primary-DEFUAULT'>
+            <div className="flex flex-col gap-4">
+              <p className="text-[#999] font-bold text-2xl bg-primary-DEFUAULT">
                 Creator Social Handles
               </p>
               <informationForm.Field
-                name='website'
+                name="website"
                 validators={{
                   onChange: informationSchema.entries.website,
                 }}
                 children={(field: any) => {
-                  const { state, name, handleBlur, handleChange } = field
+                  const { state, name, handleBlur, handleChange } = field;
 
                   return (
-                    <div className='flex flex-col gap-3'>
+                    <div className="flex flex-col gap-3">
                       <label
                         htmlFor={name}
-                        className='px-2 text-[#999] font-bold'
+                        className="px-2 text-[#999] font-bold"
                       >
                         Website
                       </label>
                       <input
-                        value={state.value || ''}
-                        type='text'
+                        value={state.value || ""}
+                        type="text"
                         id={name}
-                        placeholder='https://www.example.com'
-                        className='w-full border-none bg-black rounded-md p-3 outline-none'
+                        placeholder="https://www.example.com"
+                        className="w-full border-none bg-black rounded-md p-3 outline-none"
                         onBlur={handleBlur}
                         onChange={(e) => handleChange(e.target.value)}
                       />
                       <FieldInfo field={field} />
                     </div>
-                  )
+                  );
                 }}
               />
-              <div className='flex gap-4'>
+              <div className="flex gap-4">
                 <informationForm.Field
-                  name='discordHandle'
+                  name="discordHandle"
                   validators={{
                     onChange: informationSchema.entries.discordHandle,
                   }}
                   children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field
+                    const { state, name, handleBlur, handleChange } = field;
 
                     return (
-                      <div className='flex flex-col w-1/2'>
+                      <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#999] font-bold'
+                          className="px-2 text-[#999] font-bold"
                         >
                           Discord Link
                         </label>
                         <input
-                          type='text'
+                          type="text"
                           id={name}
-                          value={state.value || ''}
-                          placeholder=''
-                          className='w-full border-none bg-black rounded-md p-3 outline-none'
+                          value={state.value || ""}
+                          placeholder=""
+                          className="w-full border-none bg-black rounded-md p-3 outline-none"
                           onBlur={handleBlur}
                           onChange={(e) => handleChange(e.target.value)}
                         />
                         <FieldInfo field={field} />
                       </div>
-                    )
+                    );
                   }}
                 />
 
                 <informationForm.Field
-                  name='xHandle'
+                  name="xHandle"
                   validators={{
                     onChange: informationSchema.entries.xHandle,
                   }}
                   children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field
+                    const { state, name, handleBlur, handleChange } = field;
 
                     return (
-                      <div className='flex flex-col w-1/2'>
+                      <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#999] font-bold'
+                          className="px-2 text-[#999] font-bold"
                         >
                           Twitter
                         </label>
                         <input
-                          type='text'
-                          value={state.value || ''}
+                          type="text"
+                          value={state.value || ""}
                           id={name}
-                          className='w-full border-none bg-black rounded-md p-3 outline-none'
-                          placeholder=''
+                          className="w-full border-none bg-black rounded-md p-3 outline-none"
+                          placeholder=""
                           onBlur={handleBlur}
                           onChange={(e) => handleChange(e.target.value)}
                         />
                         <FieldInfo field={field} />
                       </div>
-                    )
+                    );
                   }}
                 />
               </div>
-              <div className='flex gap-4'>
+              <div className="flex gap-4">
                 <informationForm.Field
-                  name='telegramHandle'
+                  name="telegramHandle"
                   validators={{
                     onChange: informationSchema.entries.telegramHandle,
                   }}
                   children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field
+                    const { state, name, handleBlur, handleChange } = field;
 
                     return (
-                      <div className='flex flex-col w-1/2'>
+                      <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#999] font-bold'
+                          className="px-2 text-[#999] font-bold"
                         >
                           Telegram
                         </label>
                         <input
-                          type='text'
+                          type="text"
                           id={name}
-                          value={state.value || ''}
-                          placeholder=''
-                          className='w-full border-none bg-black rounded-md p-3 outline-none'
+                          value={state.value || ""}
+                          placeholder=""
+                          className="w-full border-none bg-black rounded-md p-3 outline-none"
                           onBlur={handleBlur}
                           onChange={(e) => handleChange(e.target.value)}
                         />
                         <FieldInfo field={field} />
                       </div>
-                    )
+                    );
                   }}
                 />
                 <informationForm.Field
-                  name='instagramHandle'
+                  name="instagramHandle"
                   validators={{
                     onChange: informationSchema.entries.instagramHandle,
                   }}
                   children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field
+                    const { state, name, handleBlur, handleChange } = field;
 
                     return (
-                      <div className='flex flex-col w-1/2'>
+                      <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className='px-2 text-[#999] font-bold'
+                          className="px-2 text-[#999] font-bold"
                         >
                           Instagram
                         </label>
                         <input
-                          type='text'
+                          type="text"
                           id={name}
-                          value={state.value || ''}
-                          placeholder=''
-                          className='w-full border-none bg-black rounded-md p-3 outline-none'
+                          value={state.value || ""}
+                          placeholder=""
+                          className="w-full border-none bg-black rounded-md p-3 outline-none"
                           onBlur={handleBlur}
                           onChange={(e) => handleChange(e.target.value)}
                         />
                         <FieldInfo field={field} />
                       </div>
-                    )
+                    );
                   }}
                 />
               </div>
             </div>
             <informationForm.Field
-              name='imageFile'
+              name="imageFile"
               validators={{
                 onChange: informationSchema.entries.imageFile,
               }}
               children={(field: any) => {
-                const { handleChange } = field
+                const { handleChange } = field;
                 return (
-                  <div className='flex flex-col mt-5 gap-3'>
-                    <p className='text-[#999] font-bold text-2xl bg-primary-DEFUAULT'>
+                  <div className="flex flex-col mt-5 gap-3">
+                    <p className="text-[#999] font-bold text-2xl bg-primary-DEFUAULT">
                       Collection Images
                     </p>
                     <p>Add your collection image .zip file below.</p>
-                    <div className='p-4 rounded-md border-[1px] border-[#5d5959]'>
+                    <div className="p-4 rounded-md border-[1px] border-[#5d5959]">
                       <FileUpload
                         acceptFileType={[
-                          'application/zip',
-                          'application/x-zip-compressed',
-                          'multipart/x-zip',
-                          'application/x-compressed',
+                          "application/zip",
+                          "application/x-zip-compressed",
+                          "multipart/x-zip",
+                          "application/x-compressed",
                         ]}
-                        accept={['.zip']}
-                        size='lg'
+                        accept={[".zip"]}
+                        size="lg"
                         setData={handleChange}
                       />
                       <FieldInfo field={field} />
                     </div>
                   </div>
-                )
+                );
               }}
             />
             {/* <div className='w-full flex justify-end gap-12'>
@@ -653,13 +667,13 @@ export default function Forms() {
             <informationForm.Subscribe
               selector={(state) => [state.canSubmit, state.isSubmitting]}
               children={([canSubmit, isSubmitting]) => (
-                <div className='w-full flex justify-end'>
+                <div className="w-full flex justify-end">
                   <button
-                    type='submit'
+                    type="submit"
                     disabled={!canSubmit}
-                    className='border-2 rounded-md border-primary px-3 py-2 w-32'
+                    className="border-2 rounded-md border-primary px-3 py-2 w-32"
                   >
-                    {isSubmitting ? '...' : 'Submit'}
+                    {isSubmitting ? "..." : "Submit"}
                   </button>
                 </div>
               )}
@@ -668,5 +682,5 @@ export default function Forms() {
         </div>
       </form>
     </div>
-  )
+  );
 }

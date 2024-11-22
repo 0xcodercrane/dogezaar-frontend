@@ -1,8 +1,8 @@
 import type { FieldApi } from '@tanstack/react-form'
-
 export default function FieldInfo({
   field,
 }: {
+  // eslint-disable-line @typescript-eslint/no-explicit-any
   field: FieldApi<any, any, any, any>
 }) {
   return (
