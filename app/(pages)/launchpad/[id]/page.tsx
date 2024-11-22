@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Container } from '@/components/Container'
 import {
   BsTwitterX,
   BsGlobe2,
@@ -13,9 +12,8 @@ import {
 
 const price = 0.0023
 
-export default function LaunchPad({ params }: { params: { url: string } }) {
+export default function LaunchPad({ params }: { params: { url?: string } }) {
   const [count, setCount] = useState<number>(1)
-  const { url } = params
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
