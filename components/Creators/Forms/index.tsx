@@ -17,6 +17,16 @@ export const informationSchema = v.object({
     v.trim(),
     v.minLength(20, 'Collection description must be at least 20 characters.')
   ),
+  price: v.pipe(
+    v.string(),
+    v.trim(),
+    v.nonEmpty('Price can not be empty')
+  ),
+  totalSupply: v.pipe(
+    v.string(),
+    v.trim(),
+    v.nonEmpty('Total supply can not be empty')
+  ),
   website: v.pipe(
     v.string(),
     v.trim(),
@@ -209,6 +219,69 @@ export default function Forms() {
                   )
                 }}
               />
+              <div className='flex gap-4'>
+                <informationForm.Field
+                  name='price'
+                  validators={{
+                    onChange: informationSchema.entries.price,
+                  }}
+                  children={(field: any) => {
+                    const { state, name, handleBlur, handleChange } = field
+
+                    return (
+                      <div className='flex flex-col w-1/2'>
+                        <label
+                          htmlFor={name}
+                          className='px-2 text-[#999] font-bold'
+                        >
+                          Price
+                        </label>
+                        <input
+                          type='text'
+                          id={name}
+                          value={state.value || ''}
+                          placeholder=''
+                          className='w-full border-none bg-black rounded-md p-3 outline-none'
+                          onBlur={handleBlur}
+                          onChange={(e) => handleChange(e.target.value)}
+                        />
+                        <FieldInfo field={field} />
+                      </div>
+                    )
+                  }}
+                />
+
+                <informationForm.Field
+                  name='totalSupply'
+                  validators={{
+                    onChange: informationSchema.entries.totalSupply,
+                  }}
+                  children={(field: any) => {
+                    const { state, name, handleBlur, handleChange } = field
+
+                    return (
+                      <div className='flex flex-col w-1/2'>
+                        <label
+                          htmlFor={name}
+                          className='px-2 text-[#999] font-bold'
+                        >
+                          Total Supply
+                        </label>
+                        <input
+                          type='text'
+                          value={state.value || ''}
+                          id={name}
+                          className='w-full border-none bg-black rounded-md p-3 outline-none'
+                          placeholder=''
+                          onBlur={handleBlur}
+                          onChange={(e) => handleChange(e.target.value)}
+                        />
+                        <FieldInfo field={field} />
+                      </div>
+                    )
+                  }}
+                />
+              </div>
               <div className='flex flex-col gap-4'>
                 <informationForm.Field
                   name='thumbnail'
