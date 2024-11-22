@@ -12,7 +12,7 @@ export default function Home() {
 
   const fetchCollections = async () => {
     try {
-      const response = await AxiosInstance.get('/collections')
+      const response = await AxiosInstance.get('collections')
       setCollections(response.data)
     } catch (error) {
       console.log(error)
