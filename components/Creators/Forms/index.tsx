@@ -1,4 +1,4 @@
-import { FileUpload } from "@/components/Forms/FileUpload";
+import { FileUpload } from "@/components/Creators/FileUpload";
 import * as v from "valibot";
 import { useForm } from "@tanstack/react-form";
 import { valibotValidator } from "@tanstack/valibot-form-adapter";
