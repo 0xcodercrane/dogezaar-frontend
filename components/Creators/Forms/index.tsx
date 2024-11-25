@@ -305,7 +305,7 @@ export default function Forms() {
                     const { state, name, handleBlur, handleChange } = field;
 
                     return (
-                      <div className="flex flex-col w-1/2">
+                      <div className="flex flex-col">
                         <label
                           htmlFor={name}
                           className="text-[20px] text-[#999] font-bold"
@@ -544,7 +544,7 @@ export default function Forms() {
                         htmlFor={name}
                         className="text-[20px] text-[#999] font-bold"
                       >
-                        Creator BRC20 address
+                        Creator DOGE address
                       </label>
                       <input
                         id={name}
