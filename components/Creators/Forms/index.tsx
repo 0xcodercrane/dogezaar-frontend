@@ -127,20 +127,20 @@ export default function Forms() {
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
   function handleGetBase64(file: File) {
-    if(file) {
-      const reader = new FileReader()
+    if (file) {
+      const reader = new FileReader();
 
       reader.onload = () => {
-        if(reader.result) {
-          console.log(reader.result)
+        if (reader.result) {
+          console.log(reader.result);
         }
-      }
-      
-      reader.onerror = () => {
-        console.error("Failed to read file.")
-      }
+      };
 
-      reader.readAsDataURL(file)
+      reader.onerror = () => {
+        console.error("Failed to read file.");
+      };
+
+      reader.readAsDataURL(file);
     }
   }
 
@@ -324,7 +324,9 @@ export default function Forms() {
                               handleChange(Number(e.target.value))
                             }
                           />
-                          <span  className="absolute right-2 translate-y-1/2">USD($)</span>
+                          <span className="absolute right-2 translate-y-1/2">
+                            USD($)
+                          </span>
                         </div>
                         <FieldInfo field={field} />
                       </div>
@@ -789,7 +791,7 @@ export default function Forms() {
                       <div className="flex flex-col gap-3">
                         <p>
                           Please upload your inscriptions list for your Ordinals
-                          collection. Please ensure that it's valid JSON
+                          collection. Please ensure that it&apo;s valid JSON
                           formatting,
                         </p>
                         <div className="p-3 rounded-md border-[1px] h-[300] flex justify-center items-center border-[#5d5959] cursor-pointer">
