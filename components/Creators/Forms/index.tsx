@@ -1,8 +1,33 @@
+import { useState, useRef } from "react";
 import { FileUpload } from "@/components/Creators/FileUpload";
 import * as v from "valibot";
 import { useForm } from "@tanstack/react-form";
 import { valibotValidator } from "@tanstack/valibot-form-adapter";
 import FieldInfo from "./FieldInfo";
+import Image from "next/image";
+import { HiOutlineDownload } from "react-icons/hi";
+
+export const InscriptionSchema = v.array(
+  v.object({
+    id: v.pipe(v.string(), v.trim()),
+    meta: v.optional(
+      v.object({
+        attributes: v.optional(
+          v.array(
+            v.object({
+              value: v.pipe(v.string(), v.trim()),
+              trait_type: v.pipe(v.string(), v.trim()),
+            })
+          )
+        ),
+        name: v.pipe(v.string(), v.trim()),
+        high_res_img_url: v.optional(
+          v.pipe(v.pipe(v.string(), v.trim()), v.url())
+        ),
+      })
+    ),
+  })
+);
 
 export const informationSchema = v.object({
   name: v.pipe(
@@ -15,12 +40,7 @@ export const informationSchema = v.object({
     v.trim(),
     v.minLength(20, "Collection description must be at least 20 characters.")
   ),
-  price: v.pipe(v.string(), v.trim(), v.nonEmpty("Price can not be empty")),
-  totalSupply: v.pipe(
-    v.string(),
-    v.trim(),
-    v.nonEmpty("Total supply can not be empty")
-  ),
+  price: v.pipe(v.number(), v.minValue(0)),
   website: v.pipe(
     v.string(),
     v.trim(),
@@ -70,23 +90,77 @@ export const informationSchema = v.object({
     ),
     v.maxSize(1024 * 1024, "Banner must be smaller than 1 MB.")
   ),
-  imageFile: v.pipe(
-    v.file("A image file is required"),
-    v.mimeType(
-      [
-        "application/zip",
-        "application/x-zip-compressed",
-        "multipart/x-zip",
-        "application/x-compressed",
-      ],
-      "Image file must be a Zip file."
-    )
+  inscriptionsData: v.array(
+    v.object({
+      id: v.pipe(v.string(), v.trim()),
+      meta: v.optional(
+        v.object({
+          attributes: v.optional(
+            v.array(
+              v.object({
+                value: v.pipe(v.string(), v.trim()),
+                trait_type: v.pipe(v.string(), v.trim()),
+              })
+            )
+          ),
+          name: v.pipe(v.string(), v.trim()),
+          high_res_img_url: v.optional(
+            v.pipe(v.pipe(v.string(), v.trim()), v.url())
+          ),
+        })
+      ),
+    })
+  ),
+  inscriptionsString: v.pipe(
+    v.string(),
+    v.nonEmpty("Inscription Data can not be empty")
   ),
 });
 
 export type TInformationSchema = v.InferInput<typeof informationSchema>;
+export type TinscriptionSchema = v.InferInput<typeof InscriptionSchema>;
 
 export default function Forms() {
+  const [imageHandler, setImageHandler] = useState<any>(null);
+  const imgRef = useRef<any>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+
+  function handleGetBase64(file: File) {
+    if(file) {
+      const reader = new FileReader()
+
+      reader.onload = () => {
+        if(reader.result) {
+          console.log(reader.result)
+        }
+      }
+      
+      reader.onerror = () => {
+        console.error("Failed to read file.")
+      }
+
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && imageHandler) {
+      imageHandler.handleChange(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (imageHandler.name === "thumbnail") {
+          setThumbnailPreview(reader.result as string);
+        } else {
+          setBannerPreview(reader.result as string);
+        }
+        setImageHandler(null);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const imageValidator = async (
     width: number,
     height: number,
@@ -129,8 +203,8 @@ export default function Forms() {
   const informationForm = useForm({
     onSubmit: async ({ value }: { value: TInformationSchema }) => {
       try {
-        console.log(value);
         v.parse(informationSchema, value);
+        handleGetBase64(value.banner);
       } catch (error) {
         console.log("Submission error:", error);
       }
@@ -173,7 +247,7 @@ export default function Forms() {
                     <div className="flex flex-col gam-1">
                       <label
                         htmlFor={name}
-                        className="px-2 text-[#999] font-bold"
+                        className="text-[20px] text-[#999] font-bold"
                       >
                         Collection Name
                       </label>
@@ -202,7 +276,7 @@ export default function Forms() {
                     <div className="flex flex-col gam-1">
                       <label
                         htmlFor={name}
-                        className="px-2 text-[#999] font-bold"
+                        className="text-[20px] text-[#999] font-bold"
                       >
                         Collection Description
                       </label>
@@ -234,50 +308,24 @@ export default function Forms() {
                       <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className="px-2 text-[#999] font-bold"
+                          className="text-[20px] text-[#999] font-bold"
                         >
                           Price
                         </label>
-                        <input
-                          type="text"
-                          id={name}
-                          value={state.value || ""}
-                          placeholder=""
-                          className="w-full border-none bg-black rounded-md p-3 outline-none"
-                          onBlur={handleBlur}
-                          onChange={(e) => handleChange(e.target.value)}
-                        />
-                        <FieldInfo field={field} />
-                      </div>
-                    );
-                  }}
-                />
-
-                <informationForm.Field
-                  name="totalSupply"
-                  validators={{
-                    onChange: informationSchema.entries.totalSupply,
-                  }}
-                  children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field;
-
-                    return (
-                      <div className="flex flex-col w-1/2">
-                        <label
-                          htmlFor={name}
-                          className="px-2 text-[#999] font-bold"
-                        >
-                          Total Supply
-                        </label>
-                        <input
-                          type="text"
-                          value={state.value || ""}
-                          id={name}
-                          className="w-full border-none bg-black rounded-md p-3 outline-none"
-                          placeholder=""
-                          onBlur={handleBlur}
-                          onChange={(e) => handleChange(e.target.value)}
-                        />
+                        <div className="relative">
+                          <input
+                            type="number"
+                            id={name}
+                            value={state.value || 0}
+                            placeholder=""
+                            className="w-full border-none bg-black rounded-md p-3 outline-none"
+                            onBlur={handleBlur}
+                            onChange={(e) =>
+                              handleChange(Number(e.target.value))
+                            }
+                          />
+                          <span  className="absolute right-2 translate-y-1/2">USD($)</span>
+                        </div>
                         <FieldInfo field={field} />
                       </div>
                     );
@@ -306,7 +354,7 @@ export default function Forms() {
                         <div className="flex flex-col gap-3">
                           <label
                             htmlFor={name}
-                            className="px-2 text-[#999] font-bold"
+                            className="text-[20px] text-[#999] font-bold"
                           >
                             Collection Thumbnail Image
                           </label>
@@ -315,13 +363,33 @@ export default function Forms() {
                             represent your collection and appear in previews and
                             listings. Recommended size: 1000x1000px.
                           </p>
-                          <div className="p-3 rounded-md border-[1px] border-[#5d5959]">
-                            <FileUpload
-                              acceptFileType={["image/*"]}
-                              accept={[".jpg", "jpeg", ".png"]}
-                              size="lg"
-                              setData={handleChange}
-                            />
+                          <div
+                            className="p-3 rounded-md border-[1px] h-[300] flex justify-center items-center border-[#5d5959] cursor-pointer"
+                            onClick={() => {
+                              setImageHandler({
+                                handleChange: handleChange,
+                                name: name,
+                              });
+                              imgRef?.current?.click();
+                            }}
+                          >
+                            {thumbnailPreview ? (
+                              <Image
+                                alt="upload"
+                                src={thumbnailPreview}
+                                width={300}
+                                height={150}
+                                className="rounded-m rounded-lg object-cover transition duration-200 hover:scale-105"
+                              />
+                            ) : (
+                              <Image
+                                alt="upload"
+                                src="/img/creators/upload.png"
+                                className="opacity-70 transition duration-100 hover:opacity-100"
+                                width={150}
+                                height={150}
+                              />
+                            )}
                           </div>
                           <FieldInfo field={field} />
                         </div>
@@ -338,7 +406,7 @@ export default function Forms() {
                         1200,
                         value,
                         "Banner",
-                        1
+                        5
                       );
                     },
                   }}
@@ -350,7 +418,7 @@ export default function Forms() {
                         <div className="flex flex-col gap-3">
                           <label
                             htmlFor={name}
-                            className="px-2 text-[#999] font-bold"
+                            className="text-[20px] text-[#999] font-bold"
                           >
                             Collection Banner Image
                           </label>
@@ -359,13 +427,33 @@ export default function Forms() {
                             at the top of your collection page. Recommended
                             size: 1920x1200px.
                           </p>
-                          <div className="p-3 rounded-md border-[1px] border-[#5d5959]">
-                            <FileUpload
-                              acceptFileType={["image/*"]}
-                              accept={[".jpg", "jpeg", ".png"]}
-                              size="lg"
-                              setData={handleChange}
-                            />
+                          <div
+                            className="p-3 rounded-md border-[1px] h-[300] flex justify-center items-center border-[#5d5959] cursor-pointer"
+                            onClick={() => {
+                              setImageHandler({
+                                handleChange: handleChange,
+                                name: name,
+                              });
+                              imgRef?.current?.click();
+                            }}
+                          >
+                            {bannerPreview ? (
+                              <Image
+                                alt="upload"
+                                src={bannerPreview}
+                                width={300}
+                                height={150}
+                                className="rounded-m rounded-lg object-cover transition duration-200 hover:scale-105"
+                              />
+                            ) : (
+                              <Image
+                                alt="upload"
+                                src="/img/creators/upload.png"
+                                className="opacity-70 transition duration-100 hover:opacity-100"
+                                width={150}
+                                height={150}
+                              />
+                            )}
                           </div>
                           <FieldInfo field={field} />
                         </div>
@@ -393,7 +481,7 @@ export default function Forms() {
                       <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className="px-2 text-[#999] font-bold"
+                          className="text-[20px] text-[#999] font-bold"
                         >
                           Creator Name
                         </label>
@@ -421,7 +509,7 @@ export default function Forms() {
                       <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className="px-2 text-[#999] font-bold"
+                          className="text-[20px] text-[#999] font-bold"
                         >
                           Creator email
                         </label>
@@ -452,7 +540,7 @@ export default function Forms() {
                     <div>
                       <label
                         htmlFor={name}
-                        className="px-2 text-[#999] font-bold"
+                        className="text-[20px] text-[#999] font-bold"
                       >
                         Creator BRC20 address
                       </label>
@@ -486,7 +574,7 @@ export default function Forms() {
                     <div className="flex flex-col gap-3">
                       <label
                         htmlFor={name}
-                        className="px-2 text-[#999] font-bold"
+                        className="text-[20px] text-[#999] font-bold"
                       >
                         Website
                       </label>
@@ -517,7 +605,7 @@ export default function Forms() {
                       <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className="px-2 text-[#999] font-bold"
+                          className="text-[20px] text-[#999] font-bold"
                         >
                           Discord Link
                         </label>
@@ -548,7 +636,7 @@ export default function Forms() {
                       <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className="px-2 text-[#999] font-bold"
+                          className="text-[20px] text-[#999] font-bold"
                         >
                           Twitter
                         </label>
@@ -580,7 +668,7 @@ export default function Forms() {
                       <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className="px-2 text-[#999] font-bold"
+                          className="text-[20px] text-[#999] font-bold"
                         >
                           Telegram
                         </label>
@@ -610,7 +698,7 @@ export default function Forms() {
                       <div className="flex flex-col w-1/2">
                         <label
                           htmlFor={name}
-                          className="px-2 text-[#999] font-bold"
+                          className="text-[20px] text-[#999] font-bold"
                         >
                           Instagram
                         </label>
@@ -630,40 +718,96 @@ export default function Forms() {
                 />
               </div>
             </div>
-            <informationForm.Field
-              name="imageFile"
-              validators={{
-                onChange: informationSchema.entries.imageFile,
-              }}
-              children={(field: any) => {
-                const { handleChange } = field;
-                return (
-                  <div className="flex flex-col mt-5 gap-3">
-                    <p className="text-[#999] font-bold text-2xl bg-primary-DEFUAULT">
-                      Collection Images
-                    </p>
-                    <p>Add your collection image .zip file below.</p>
-                    <div className="p-4 rounded-md border-[1px] border-[#5d5959]">
-                      <FileUpload
-                        acceptFileType={[
-                          "application/zip",
-                          "application/x-zip-compressed",
-                          "multipart/x-zip",
-                          "application/x-compressed",
-                        ]}
-                        accept={[".zip"]}
-                        size="lg"
-                        setData={handleChange}
-                      />
-                      <FieldInfo field={field} />
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between">
+                <p className="text-[#999] font-bold text-2xl bg-primary-DEFUAULT">
+                  Inscription JSON file
+                </p>
+                <div className="border-[#999] px-[10px]  rounded-full border-2 border-solid">
+                  <a
+                    href="/download/format.json"
+                    className="flex items-center gap-2 leading-8"
+                    download
+                  >
+                    Download Template .json
+                    <HiOutlineDownload />
+                  </a>
+                </div>
+              </div>
+              <informationForm.Field
+                name="inscriptionsString"
+                validators={{
+                  onChangeAsyncDebounceMs: 1000,
+                  onChange: ({ value }: { value: string }) => {
+                    if (!value) {
+                      return "Inscription data address cannot be empty";
+                    }
+
+                    const inscriptionIdPattern = /^[a-f0-9]{64}i\d+$/;
+                    let inscriptionJsonData;
+
+                    try {
+                      const data: TInformationSchema["inscriptionsData"] =
+                        JSON.parse(value);
+
+                      data.map((i) => {
+                        if (!inscriptionIdPattern.test(i.id)) {
+                          throw new Error("Invalid inscription ID(s) found.");
+                        }
+                      });
+
+                      inscriptionJsonData = v.parse(
+                        informationSchema.entries.inscriptionsData,
+                        data
+                      );
+                      // }
+
+                      informationForm.setFieldValue(
+                        "inscriptionsData",
+                        inscriptionJsonData
+                      );
+                    } catch (error: any) {
+                      if (error?.name === "SyntaxError") {
+                        return "Invalid JSON format.";
+                      } else if (error instanceof v.ValiError) {
+                        return `${error.message}.`;
+                      } else if (
+                        error.message === "Invalid inscription ID(s) found."
+                      ) {
+                        return error.message;
+                      } else {
+                        return "Invalid JSON format.";
+                      }
+                    }
+                    return undefined;
+                  },
+                }}
+                children={(field: any) => {
+                  const { handleChange } = field;
+                  return (
+                    <div>
+                      <div className="flex flex-col gap-3">
+                        <p>
+                          Please upload your inscriptions list for your Ordinals
+                          collection. Please ensure that it's valid JSON
+                          formatting,
+                        </p>
+                        <div className="p-3 rounded-md border-[1px] h-[300] flex justify-center items-center border-[#5d5959] cursor-pointer">
+                          <FileUpload
+                            schema={informationSchema.entries.inscriptionsData}
+                            setData={handleChange}
+                            acceptFileType={"application/json"}
+                            accept={[".json"]}
+                            size="lg"
+                          />
+                        </div>
+                        <FieldInfo field={field} />
+                      </div>
                     </div>
-                  </div>
-                );
-              }}
-            />
-            {/* <div className='w-full flex justify-end gap-12'>
-            <Button content='Submit' />
-          </div> */}
+                  );
+                }}
+              ></informationForm.Field>
+            </div>
             <informationForm.Subscribe
               selector={(state) => [state.canSubmit, state.isSubmitting]}
               children={([canSubmit, isSubmitting]) => (
@@ -681,6 +825,13 @@ export default function Forms() {
           </div>
         </div>
       </form>
+      <input
+        ref={imgRef}
+        type="file"
+        accept="image/jpeg, image/png"
+        className="hidden"
+        onChange={(e) => handleImageChange(e)}
+      />
     </div>
   );
 }

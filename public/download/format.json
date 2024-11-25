@@ -1,0 +1,19 @@
+[
+  {
+    "id": "3d03e90b6ee8365adf5cc174b475bb4b725b96ebee54227c61f82ce2ad343d61i0",
+    "meta": {
+      "name": "NFT #1",
+      "high_res_img_url": "https://hi_res_img.png",
+      "attributes": [
+        {
+          "trait_type": "Clan",
+          "value": "Aoi"
+        },
+        {
+          "trait_type": "Class",
+          "value": "Warrior"
+        }
+      ]
+    }
+  }
+]
