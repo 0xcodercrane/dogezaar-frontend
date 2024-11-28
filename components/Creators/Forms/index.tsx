@@ -6,6 +6,7 @@ import { valibotValidator } from "@tanstack/valibot-form-adapter";
 import FieldInfo from "./FieldInfo";
 import Image from "next/image";
 import { HiOutlineDownload } from "react-icons/hi";
+import { AxiosInstance } from "@/utils/axios";
 
 export const InscriptionSchema = v.array(
   v.object({
@@ -132,7 +133,7 @@ export default function Forms() {
 
       reader.onload = () => {
         if (reader.result) {
-          console.log(reader.result);
+          return reader.result;
         }
       };
 
@@ -204,7 +205,39 @@ export default function Forms() {
     onSubmit: async ({ value }: { value: TInformationSchema }) => {
       try {
         v.parse(informationSchema, value);
-        handleGetBase64(value.banner);
+
+        const newCollection = new FormData();
+        newCollection.append("name", value.name);
+        newCollection.append("description", value.description);
+        newCollection.append("price", value.price.toString());
+        newCollection.append("website", value.website);
+        newCollection.append("xHandle", value.xHandle);
+        newCollection.append("discordHandle", value.discordHandle || "");
+        newCollection.append("telegramHandle", value.telegramHandle || "");
+        newCollection.append("instagramHandle", value.instagramHandle || "");
+        newCollection.append("creatorName", value.creatorName);
+        newCollection.append("creatorEmail", value.creatorEmail);
+        newCollection.append("creatorDOGEAddress", value.creatorDOGEAddress);
+        newCollection.append("thumbnail", value.thumbnail);
+        newCollection.append("banner", value.banner);
+        newCollection.append("inscriptionsString", value.inscriptionsString);
+
+        try {
+          let response = await AxiosInstance.post(
+            "apis/collections/insertCollection",
+            newCollection,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+          if (response) {
+            alert("Insert Collection successfully");
+          }
+        } catch (error) {
+          console.log(error);
+        }
       } catch (error) {
         console.log("Submission error:", error);
       }
