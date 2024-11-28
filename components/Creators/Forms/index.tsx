@@ -7,6 +7,7 @@ import FieldInfo from "./FieldInfo";
 import Image from "next/image";
 import { HiOutlineDownload } from "react-icons/hi";
 import { AxiosInstance } from "@/utils/axios";
+import { toast } from "react-toastify";
 
 export const InscriptionSchema = v.array(
   v.object({
@@ -127,24 +128,6 @@ export default function Forms() {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
-  function handleGetBase64(file: File) {
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        if (reader.result) {
-          return reader.result;
-        }
-      };
-
-      reader.onerror = () => {
-        console.error("Failed to read file.");
-      };
-
-      reader.readAsDataURL(file);
-    }
-  }
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && imageHandler) {
@@ -233,10 +216,11 @@ export default function Forms() {
             }
           );
           if (response) {
-            alert("Insert Collection successfully");
+            toast.success("Insert Collection successfully");
           }
         } catch (error) {
           console.log(error);
+          toast.warn("Failed to insert collection");
         }
       } catch (error) {
         console.log("Submission error:", error);
