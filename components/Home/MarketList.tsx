@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { TCollection } from '@/types/collections.type'
-import CollectionListItem from './CollectionListItem'
+import { TMarketlist } from '@/types/marketlists.type'
+import MarketListItem from './MarketListItem'
 import SkeletonItem from './SkeletonItem'
 
 const floorPeriodLists = [
@@ -13,9 +13,9 @@ const floorPeriodLists = [
 ]
 
 export default function CollectionList({
-  collections,
+  marketlists,
 }: {
-  collections: TCollection[]
+  marketlists: TMarketlist[]
 }) {
   const [itemsPerPage, setItemsPerPage] = useState<number>(10)
   const [floorPeriod, setFloorPeriod] = useState<string>('1d')
@@ -49,11 +49,11 @@ export default function CollectionList({
         <div className='w-[15%] hidden sm:block'>Sales</div>
         <div className='w-[25%] sm:w-[15%]'>Listing</div>
       </div>
-      {collections.length > 0
-        ? collections
+      {marketlists.length > 0
+        ? marketlists
             .slice(0, itemsPerPage)
-            .map((collection, index) => (
-              <CollectionListItem key={index} collection={collection} />
+            .map((marketlist, index) => (
+              <MarketListItem key={index} marketlist={marketlist} />
             ))
         : Array.from({ length: 4 }).map((_, index) => (
             <SkeletonItem key={index} />

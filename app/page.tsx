@@ -1,36 +1,48 @@
-'use client'
-import { useState, useEffect } from 'react'
-import { Container } from '@/components/Container'
-import CollectionCarousel from '@/components/Home/CollectionCarousel'
-import CollectionList from '@/components/Home/CollectionList'
-import { AxiosInstance } from '@/utils/axios'
-import { TCollection } from '@/types/collections.type'
-
+"use client";
+import { useState, useEffect } from "react";
+import { Container } from "@/components/Container";
+import CollectionCarousel from "@/components/Home/CollectionCarousel";
+import CollectionList from "@/components/Home/MarketList";
+import { AxiosInstance } from "@/utils/axios";
+import { TMarketlist } from "@/types/marketlists.type";
+import { TCollection } from "@/types/collections.type";
 
 export default function Home() {
-  const [collections, setCollections] = useState<TCollection[]>([])
+  const [marketlists, setMarketlists] = useState<TMarketlist[]>([]);
+  const [collections, setCollections] = useState<TCollection[]>([]);
 
+  const fetchMarketlists = async () => {
+    try {
+      const response = await AxiosInstance.get("apis/marketlists");
+      setMarketlists(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const fetchCollections = async () => {
     try {
-      const response = await AxiosInstance.get('apis/marketlists')
-      setCollections(response.data)
+      const response = await AxiosInstance.get(
+        "apis/collections/getBannerCollections"
+      );
+      setCollections(response.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchCollections()
-  }, [])
+    fetchMarketlists();
+    fetchCollections();
+  }, []);
 
   return (
-    <div className='h-hull bg-background py-[100px]'>
-      <div className='h-full w-full'>
+    <div className="h-hull bg-background py-[100px]">
+      <div className="h-full w-full">
         <Container padding>
-          <CollectionCarousel />
-          <CollectionList collections={collections} />
+          <CollectionCarousel collections={collections} />
+          <CollectionList marketlists={marketlists} />
         </Container>
       </div>
     </div>
-  )
+  );
 }

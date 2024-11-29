@@ -1,9 +1,14 @@
-'use client'
-import Carousel from 'react-multi-carousel'
-import 'react-multi-carousel/lib/styles.css'
-import CarouselItem from './CarouselItem'
+"use client";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import CarouselItem from "./CarouselItem";
+import { TCollection } from "@/types/collections.type";
 
-export default function CollectionCarousel() {
+export default function CollectionCarousel({
+  collections,
+}: {
+  collections: TCollection[];
+}) {
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.
@@ -22,20 +27,18 @@ export default function CollectionCarousel() {
       breakpoint: { max: 768, min: 0 },
       items: 2,
     },
-  }
+  };
   return (
     <Carousel responsive={responsive}>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
-      <CarouselItem name='Doge ordinal' imageURL='https://static.unisat.io/content/cf9f195b6d56e6db56dd7faea74c642c869e0f93239dbf9772ee2aa194ec0c33i0' url='/launchpad/dogeordinal'/>
+      {collections.length > 0 &&
+        collections?.map((collection, index) => (
+          <CarouselItem
+            name={collection.name}
+            imageURL={collection.thumbnail}
+            url={`/launchpad/${collection.id}`}
+            key={index}
+          />
+        ))}
     </Carousel>
-  )
+  );
 }
