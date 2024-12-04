@@ -93,8 +93,6 @@ export default function LaunchPad() {
       };
       const response = await AxiosInstance.post("apis/order/create", data);
       if (response.status === 200) {
-        onOpen();
-        console.log(response);
         setOrderInfo(response.data);
       }
     } catch (error) {
@@ -158,7 +156,7 @@ export default function LaunchPad() {
             <div>
               <button
                 className="bg-[#f71f71] hover:bg-[#962651] overflow-hidden w-full text-2xl px-4 py-2 rounded-md text-white duration-200"
-                onClick={handleMint}
+                onClick={onOpen}
               >
                 Mint
               </button>
