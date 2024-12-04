@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
   BsTwitterX,
   BsGlobe2,
@@ -12,8 +11,11 @@ import {
 import { useParams } from "next/navigation";
 import { AxiosInstance } from "@/utils/axios";
 import { TCollection } from "@/types/collections.type";
+import { TOrderInfo } from "@/types/lauchpad.type";
 import { useAppSelector } from "@/app/lib/hooks";
 import { RootState } from "@/app/lib/store";
+import OrderModal from "@/components/LaunchPad/OrderModal";
+import { useDisclosure } from "@nextui-org/react";
 
 const price = 0.0023;
 export default function LaunchPad() {
@@ -40,10 +42,11 @@ export default function LaunchPad() {
     createdAt: "",
     updatedAt: "",
   });
+  const wallet = useAppSelector((state: RootState) => state?.wallet);
+  const [orderInfo, setOrderInfo] = useState<TOrderInfo>();
+  const [receivedAddress, setReceivedAddress] = useState(wallet?.address || "");
 
-  const wallet = useAppSelector((state: RootState) => state.wallet);
-
-  console.log(wallet);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const mintedPercent = useMemo(() => {
     if (collectionInfo.minted === 0) {
@@ -71,13 +74,36 @@ export default function LaunchPad() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     if (/^\d*$/.test(inputValue)) {
-      if (Number(inputValue) > collectionInfo.totalSupply)
-        setCount(collectionInfo.totalSupply);
+      if (
+        Number(inputValue) >
+        collectionInfo.totalSupply - collectionInfo.minted
+      )
+        setCount(collectionInfo.totalSupply - collectionInfo.minted);
       else setCount(Number(inputValue));
     }
   };
+
+  const handleMint = async () => {
+    try {
+      const data = {
+        collectionId: id,
+        price: collectionInfo.price,
+        amount: count,
+        address: receivedAddress,
+      };
+      const response = await AxiosInstance.post("apis/order/create", data);
+      if (response.status === 200) {
+        onOpen();
+        console.log(response);
+        setOrderInfo(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="bg-background my-[100px] pt-[100px] flex items-center">
+    <div className="bg-background pt-[200px] flex items-center">
       <div className="w-full flex justify-center">
         <div className="grid w-4/5 md:w-2/3 grid-cols-1 px-8 md:grid-cols-2 gap-20">
           <div className="w-full h-[400px] sm:h-[500px] bg-primary-DEFUAULT rounded-md overflow-hidden">
@@ -130,8 +156,11 @@ export default function LaunchPad() {
               </div>
             </div>
             <div>
-              <button className="bg-[#f71f71] hover:bg-[#962651] overflow-hidden w-full text-2xl px-4 py-2 rounded-md text-white duration-200">
-                {wallet.connected ? "Mint" : "Connect Wallet"}
+              <button
+                className="bg-[#f71f71] hover:bg-[#962651] overflow-hidden w-full text-2xl px-4 py-2 rounded-md text-white duration-200"
+                onClick={handleMint}
+              >
+                Mint
               </button>
             </div>
             <div className="flex flex-col gap-2">
@@ -155,6 +184,15 @@ export default function LaunchPad() {
           </div>
         </div>
       </div>
+      <OrderModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        address={orderInfo?.payAddress || ""}
+        amount={orderInfo?.payPrice || 0}
+        submitOrder={handleMint}
+        setReceivedAddress={setReceivedAddress}
+        receivedAddress={receivedAddress}
+      ></OrderModal>
     </div>
   );
 }

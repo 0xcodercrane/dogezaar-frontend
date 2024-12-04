@@ -24,12 +24,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dogeSans.variable} font-sans antialiased`}>
+      <body className={`${dogeSans.variable} font-sans antialiased dark min-h-[100vh]`}>
         <Providers>
           <Header />
           {children}
         </Providers>
-        <ToastContainer
+        {/* <ToastContainer
           position="top-right"
           autoClose={5000}
           hideProgressBar={false}
@@ -40,7 +40,7 @@ export default function RootLayout({
           draggable
           pauseOnHover
           theme="dark"
-        />
+        /> */}
       </body>
     </html>
   );
