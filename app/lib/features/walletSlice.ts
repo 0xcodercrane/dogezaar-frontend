@@ -32,7 +32,9 @@ export const walletSlice = createAppSlice({
       state.address = action.payload.address;
     },
     disconnectWallet: (state) => {
-      state = initialState;
+      state.myDoge = {};
+      state.address = "";
+      state.connected = false;
     },
   }),
 });

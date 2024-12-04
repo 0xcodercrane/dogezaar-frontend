@@ -7,10 +7,16 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Button
+  Button,
 } from "@nextui-org/react";
+import { useAppDispatch } from "@/app/lib/hooks";
+import {
+  setConnectedWallet,
+  disconnectWallet,
+} from "@/app/lib/features/walletSlice";
 
 export default function ConnectBtn() {
+  const dispatch = useAppDispatch();
   const [myDoge, setMyDoge] = useState<any>();
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState("");
@@ -38,9 +44,11 @@ export default function ConnectBtn() {
     startLength: number,
     endLength: number
   ): string {
-
-    console.log(walletAddress)
-    return walletAddress.slice(0, startLength) + "..." + walletAddress.slice(-endLength);
+    return (
+      walletAddress.slice(0, startLength) +
+      "..." +
+      walletAddress.slice(-endLength)
+    );
   }
 
   const checkConnection = useCallback(async () => {
@@ -73,6 +81,7 @@ export default function ConnectBtn() {
           setConnected(false);
           setAddress("");
           setBtnText("Connect Wallet");
+          dispatch(disconnectWallet());
         }
         return;
       }
@@ -83,6 +92,11 @@ export default function ConnectBtn() {
         setConnected(true);
         setAddress(connectRes.address);
         setBtnText("Disconnect");
+        const data = {
+          connected: true,
+          address: connectRes.address,
+        };
+        dispatch(setConnectedWallet(data));
       }
     } catch (error) {}
   }, [connected, myDoge]);
@@ -90,15 +104,35 @@ export default function ConnectBtn() {
   return (
     <div>
       {!connected ? (
-        <Button onPress={onConnect} className="border-2 border-solid border-white rounded-lg py-2">Connect Wallet</Button>
+        <Button
+          onPress={onConnect}
+          className="border-2 border-solid border-white rounded-lg py-2"
+        >
+          {btnText}
+        </Button>
       ) : (
         <Dropdown backdrop="blur">
           <DropdownTrigger>
-            <Button className="border-2 border-solid border-white rounded-lg py-2">{abbreviatedAddress(address, 8, 4)}</Button>
+            <Button className="border-2 border-solid border-white rounded-lg py-2">
+              {abbreviatedAddress(address, 8, 4)}
+            </Button>
           </DropdownTrigger>
-          <DropdownMenu aria-label="Static Actions" className="bg-primary-DEFUAULT rounded-md">
-            <DropdownItem key="edit" className="hover:bg-slate-600 py-2 cursor-pointer">{abbreviatedAddress(address, 8, 4)}</DropdownItem>
-            <DropdownItem key="delete" onClick={onConnect} className="text-danger hover:bg-slate-600 py-2 cursor-pointer" color="danger">
+          <DropdownMenu
+            aria-label="Static Actions"
+            className="bg-primary-DEFUAULT rounded-md"
+          >
+            <DropdownItem
+              key="edit"
+              className="hover:bg-slate-600 py-2 cursor-pointer"
+            >
+              {abbreviatedAddress(address, 8, 4)}
+            </DropdownItem>
+            <DropdownItem
+              key="delete"
+              onClick={onConnect}
+              className="text-danger hover:bg-slate-600 py-2 cursor-pointer"
+              color="danger"
+            >
               Disconnect
             </DropdownItem>
           </DropdownMenu>

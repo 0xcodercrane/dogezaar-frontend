@@ -13,6 +13,8 @@ export type TCollection = {
   creatorDogeAddress: string; // Creator's Dogecoin address
   thumbnail: string; // Thumbnail image URL
   banner: string; // Banner image URL
+  totalSupply: number,
+  minted: number,
   inscriptions: string; // Ordinal inscriptions string
   createdAt: string; // Timestamp for creation
   updatedAt: string; // Timestamp for last update

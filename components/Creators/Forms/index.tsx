@@ -206,7 +206,7 @@ export default function Forms() {
         newCollection.append("inscriptionsString", value.inscriptionsString);
 
         try {
-          let response = await AxiosInstance.post(
+          const response = await AxiosInstance.post(
             "apis/collections/insertCollection",
             newCollection,
             {

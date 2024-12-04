@@ -3,7 +3,7 @@ import walletReducer from "./features/walletSlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
 
-const persisConfig = {
+const persistConfig = {
   key: "doginal-bot",
   storage,
   whiteList: ["wallet"],
@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
   wallet: walletReducer,
 });
 
-const persistedWalletReducer = persistReducer(persisConfig, rootReducer);
+const persistedWalletReducer = persistReducer(persistConfig, rootReducer);
 
 export const makeStore = () => {
   return configureStore({
