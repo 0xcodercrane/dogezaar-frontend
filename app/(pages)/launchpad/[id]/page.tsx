@@ -16,6 +16,7 @@ import { useAppSelector } from "@/app/lib/hooks";
 import { RootState } from "@/app/lib/store";
 import OrderModal from "@/components/LaunchPad/OrderModal";
 import { useDisclosure } from "@nextui-org/react";
+import OrderItem from "@/components/LaunchPad/OrderItem";
 
 const price = 0.0023;
 export default function LaunchPad() {
@@ -45,8 +46,24 @@ export default function LaunchPad() {
   const wallet = useAppSelector((state: RootState) => state?.wallet);
   const [orderInfo, setOrderInfo] = useState<TOrderInfo>();
   const [receivedAddress, setReceivedAddress] = useState(wallet?.address || "");
+  const [orderLists, setOrderLists] = useState<TOrderInfo[]>([]);
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  useEffect(() => {
+    const fetchOrderLists = async () => {
+      try {
+        if (wallet.address !== "") {
+          const response = await AxiosInstance.get(`apis/order/${wallet.address}`);
+          if(response.status === 200) {
+            setOrderLists(response.data)
+          }
+        }
+      } catch (error) {}
+    };
+
+    fetchOrderLists();
+  }, []);
 
   const mintedPercent = useMemo(() => {
     if (collectionInfo.minted === 0) {
@@ -67,6 +84,7 @@ export default function LaunchPad() {
       console.log(error);
     }
   }
+
   useEffect(() => {
     fetchCollectionData(id);
   }, [id]);
@@ -102,7 +120,7 @@ export default function LaunchPad() {
 
   return (
     <div className="bg-background pt-[200px] flex items-center">
-      <div className="w-full flex justify-center">
+      <div className="w-full flex flex-col items-center justify-center gap-12">
         <div className="grid w-4/5 md:w-2/3 grid-cols-1 px-8 md:grid-cols-2 gap-20">
           <div className="w-full h-[400px] sm:h-[500px] bg-primary-DEFUAULT rounded-md overflow-hidden">
             <Image
@@ -181,12 +199,42 @@ export default function LaunchPad() {
             </div>
           </div>
         </div>
+        <div className="w-4/5 md:w-2/3 p-8 ">
+          <div>
+            <h2 className="font-bold w-full md:w-[30%] text-4xl py-4">
+              My Orders
+            </h2>
+            <hr className="border-primary-DEFUAULT" />
+          </div>
+          <div className="flex w-full items-center p-2  font-bold text-xl text-white">
+            <div className="md:w-1/3">Order Id</div>
+            <div className="w-1/6">Quantity</div>
+            <div className="w-1/6">Status</div>
+            <div className="w-1/3">Date</div>
+          </div>
+          {wallet.address ? (
+            orderLists.length > 0 ? (
+              orderLists.map((orderItem, index) => {
+                return <OrderItem key={index} orderItem={orderItem} />;
+              })
+            ) : (
+              <div className="text-center py-6 text-xl">
+                There is no orders you created
+              </div>
+            )
+          ) : (
+            <div className="text-center py-6 text-xl">
+              Please connect your wallet
+            </div>
+          )}
+        </div>
       </div>
+
       <OrderModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         address={orderInfo?.payAddress || ""}
-        amount={orderInfo?.payPrice || 0}
+        amount={orderInfo?.price || 0}
         submitOrder={handleMint}
         setReceivedAddress={setReceivedAddress}
         receivedAddress={receivedAddress}
