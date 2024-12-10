@@ -9,7 +9,7 @@ import {
 import { QRCode } from "react-qrcode-logo";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FaRegCopy, FaRegCheckCircle } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@nextui-org/react";
 import usePayDoge from "@/hooks/usePayDoge";
 import { useAppSelector } from "@/app/lib/hooks";
@@ -42,6 +42,12 @@ export default function OrderModal({
     setStep(2);
   }
 
+  useEffect(() => {
+    if (isOpen) {
+      setStep(1);
+    }
+  }, [isOpen]);
+
   function showModalBody(onClose) {
     if (step === 1) {
       return (
@@ -73,7 +79,7 @@ export default function OrderModal({
           </ModalBody>
           <ModalFooter>
             <Button color="danger" variant="light" onPress={onClose}>
-              Close
+              Cancel
             </Button>
             <Button
               color="danger"

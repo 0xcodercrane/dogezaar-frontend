@@ -23,7 +23,7 @@ export default function usePayDoge(amount: number, payAddress: string) {
     } catch (error) {
       console.log(error);
     }
-  }, [wallet.myDoge]);
+  }, [wallet.myDoge, wallet.connected]);
 
   return { handlePayDoge };
 }

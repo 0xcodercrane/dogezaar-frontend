@@ -66,6 +66,7 @@ export default function LaunchPad() {
         }
       } catch (error) {}
     };
+    setReceivedAddress(wallet.address)
 
     fetchOrderLists();
     return () => clearInterval(intervalRef.current);
