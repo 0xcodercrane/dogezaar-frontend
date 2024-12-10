@@ -1,12 +1,6 @@
 "use client";
-
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useAppDispatch, useAppSelector } from "@/app/lib/hooks";
-import { 
-  setConnectedWallet, 
-  disconnectWallet 
-} from "@/app/lib/features/walletSlice";
-import { RootState } from "@/app/lib/store";
+// import Button from "../UI/Button";
 import { useInterval } from "@/hooks/useInterval";
 import {
   Dropdown,
@@ -15,116 +9,98 @@ import {
   DropdownTrigger,
   Button,
 } from "@nextui-org/react";
+import { useAppDispatch } from "@/app/lib/hooks";
+import {
+  setConnectedWallet,
+  disconnectWallet,
+} from "@/app/lib/features/walletSlice";
 
 export default function ConnectBtn() {
   const dispatch = useAppDispatch();
-  const { connected, address, myDoge } = useAppSelector((state: RootState) => state.wallet);
+  const [myDoge, setMyDoge] = useState<any>();
+  const [connected, setConnected] = useState(false);
+  const [address, setAddress] = useState("");
   const [btnText, setBtnText] = useState("Connect Wallet");
+  const intervalRef = useRef<any>();
 
   useEffect(() => {
-    const { doge } = window as any;
-
-    if (doge?.isMyDoge) {
-      dispatch(setConnectedWallet({ connected, address, myDoge: doge }));
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    const savedWallet = JSON.parse(localStorage.getItem("walletData") || "{}");
-
-    if (savedWallet.connected) {
-      const { doge } = window as any;
-      if (doge?.isMyDoge) {
-        doge
-          .getConnectionStatus()
-          .then((status) => {
-            if (status.connected) {
-              dispatch(
-                setConnectedWallet({
-                  connected: true,
-                  address: savedWallet.address,
-                  myDoge: doge,
-                })
-              );
-            } else {
-              handleDisconnect();
-            }
-          })
-          .catch(() => handleDisconnect());
-      }
-    }
-  }, [dispatch]);
-
-  const abbreviatedAddress = (walletAddress: string, startLength: number, endLength: number): string => {
-    return (
-      walletAddress.slice(0, startLength) + "..." + walletAddress.slice(-endLength)
-    );
-  };
-
-  const handleDisconnect = useCallback(async () => {
-    if (myDoge) {
-      try {
-        const disconnectedRes = await myDoge.disconnect();
-        if (disconnectedRes?.disconnected) {
-          setBtnText("Connect Wallet");
-          dispatch(disconnectWallet());
-          localStorage.removeItem("walletData");
+    if (!myDoge && !intervalRef.current) {
+      intervalRef.current = setInterval(() => {
+        const { doge } = window as any;
+        if (doge?.isMyDoge) {
+          setMyDoge(doge);
+          console.log(doge);
+          clearInterval(intervalRef.current);
+          console.log("My Doge API injected from interval");
+        } else {
+          console.log("MyDoge API not injected");
         }
-      } catch (error) {
-        console.error("Failed to disconnect wallet:", error);
-      }
+      }, 1000);
     }
-  }, [myDoge, dispatch]);
+  }, [myDoge]);
+
+  function abbreviatedAddress(
+    walletAddress: string,
+    startLength: number,
+    endLength: number
+  ): string {
+    return (
+      walletAddress.slice(0, startLength) +
+      "..." +
+      walletAddress.slice(-endLength)
+    );
+  }
 
   const checkConnection = useCallback(async () => {
     if (connected) {
-      try {
-        const connectionStatusRes = await myDoge?.getConnectionStatus();
-        if (!connectionStatusRes?.connected) {
-          handleDisconnect();
-        }
-      } catch (error) {
-        console.error("Error checking connection status:", error);
+      const connectionStatusRes = await myDoge
+        .getConnectionStatus()
+        .catch(console.error);
+
+      if (!connectionStatusRes?.connected) {
+        setConnected(false);
+        setAddress("");
+        setBtnText("Wallet Connect");
       }
     }
-  }, [connected, myDoge, handleDisconnect]);
+  }, [connected, myDoge]);
 
   useInterval(checkConnection, 5000, false);
 
-  const onConnect = async () => {
-    const { doge } = window as any;
-
-    if (!doge?.isMyDoge) {
+  const onConnect = useCallback(async () => {
+    if (!myDoge?.isMyDoge) {
       alert("MyDoge wallet is not installed");
       return;
     }
 
     try {
       if (connected) {
-        await handleDisconnect();
+        const disconnectedRes = await myDoge.disconnect();
+        console.log("disconnect result", disconnectedRes);
+        if (disconnectedRes.disconnected) {
+          setConnected(false);
+          setAddress("");
+          setBtnText("Connect Wallet");
+          dispatch(disconnectWallet());
+        }
         return;
       }
 
-      const connectRes = await doge.connect();
+      const connectRes = await myDoge.connect();
+      console.log("connect result", connectRes);
       if (connectRes.approved) {
+        setConnected(true);
+        setAddress(connectRes.address);
         setBtnText("Disconnect");
-        const walletData = {
+        const data = {
           connected: true,
           address: connectRes.address,
+          myDoge: myDoge
         };
-        localStorage.setItem("walletData", JSON.stringify(walletData));
-        dispatch(
-          setConnectedWallet({
-            connected: true,
-            address: connectRes.address,
-            myDoge: doge,
-          })
-        );
+        dispatch(setConnectedWallet(data));
       }
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-    }
-  };
+    } catch (error) {}
+  }, [connected, myDoge]);
 
   return (
     <div>
@@ -144,16 +120,16 @@ export default function ConnectBtn() {
           </DropdownTrigger>
           <DropdownMenu
             aria-label="Static Actions"
-            className="bg-primary-DEFAULT rounded-md"
+            className="bg-primary-DEFUAULT rounded-md"
           >
             <DropdownItem
-              key="address"
+              key="edit"
               className="hover:bg-slate-600 py-2 cursor-pointer"
             >
               {abbreviatedAddress(address, 8, 4)}
             </DropdownItem>
             <DropdownItem
-              key="disconnect"
+              key="delete"
               onClick={onConnect}
               className="text-danger hover:bg-slate-600 py-2 cursor-pointer"
               color="danger"

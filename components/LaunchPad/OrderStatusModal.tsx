@@ -6,8 +6,6 @@ import {
   ModalFooter,
   Button,
 } from "@nextui-org/react";
-import { useAppSelector } from "@/app/lib/hooks";
-import { RootState } from "@/app/lib/store";
 import { QRCode } from "react-qrcode-logo";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FaRegCopy, FaRegCheckCircle } from "react-icons/fa";
@@ -15,8 +13,6 @@ import {  useState } from "react";
 import usePayDoge from "@/hooks/usePayDoge";
 
 export default function OrderStatusModal({ isOpen, onOpenChange, orderInfo }) {
-  const wallet = useAppSelector((state: RootState) => state?.wallet);
-  console.log(wallet);
   const [isCopy, setIsCopy] = useState(false);
 
   const { handlePayDoge } = usePayDoge(4.2, orderInfo.payAddress);
