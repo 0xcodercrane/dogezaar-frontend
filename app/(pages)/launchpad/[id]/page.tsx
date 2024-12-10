@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import {
   BsTwitterX,
@@ -17,6 +17,7 @@ import { RootState } from "@/app/lib/store";
 import OrderModal from "@/components/LaunchPad/OrderModal";
 import { useDisclosure } from "@nextui-org/react";
 import OrderItem from "@/components/LaunchPad/OrderItem";
+import OrderList from "@/components/LaunchPad/OrderList";
 
 const price = 0.0023;
 export default function LaunchPad() {
@@ -47,6 +48,7 @@ export default function LaunchPad() {
   const [orderInfo, setOrderInfo] = useState<TOrderInfo>();
   const [receivedAddress, setReceivedAddress] = useState(wallet?.address || "");
   const [orderLists, setOrderLists] = useState<TOrderInfo[]>([]);
+  const intervalRef = useRef<NodeJS.Timeout>();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -54,16 +56,32 @@ export default function LaunchPad() {
     const fetchOrderLists = async () => {
       try {
         if (wallet.address !== "") {
-          const response = await AxiosInstance.get(`apis/order/${wallet.address}`);
-          if(response.status === 200) {
-            setOrderLists(response.data)
+          const response = await AxiosInstance.get(
+            `apis/order/${wallet.address}`
+          );
+          if (response.status === 200) {
+            setOrderLists(response.data);
           }
         }
       } catch (error) {}
     };
 
     fetchOrderLists();
+    return () => clearInterval(intervalRef.current);
   }, []);
+
+  function fetchOrderData(orderId) {
+    intervalRef.current = setInterval(async () => {
+      try {
+        const response = await AxiosInstance.get(
+          `/apis/order/getOrderById/${orderId}`
+        );
+        setOrderInfo(response.data);
+      } catch (error) {
+        console.error("Error checking order status:", error);
+      }
+    }, 10000);
+  }
 
   const mintedPercent = useMemo(() => {
     if (collectionInfo.minted === 0) {
@@ -78,12 +96,17 @@ export default function LaunchPad() {
       const response = await AxiosInstance(`apis/collections/${id}`);
       if (response.status === 200) {
         setCollectionInfo(response.data);
-        console.log(response.data);
       }
     } catch (error) {
       console.log(error);
     }
   }
+
+  useEffect(() => {
+    if (orderInfo?.status !== "pending") {
+      clearInterval(intervalRef.current);
+    }
+  }, [orderInfo?.status]);
 
   useEffect(() => {
     fetchCollectionData(id);
@@ -112,6 +135,7 @@ export default function LaunchPad() {
       const response = await AxiosInstance.post("apis/order/create", data);
       if (response.status === 200) {
         setOrderInfo(response.data);
+        fetchOrderData(response.data.id);
       }
     } catch (error) {
       console.log(error);
@@ -199,35 +223,7 @@ export default function LaunchPad() {
             </div>
           </div>
         </div>
-        <div className="w-4/5 md:w-2/3 p-8 ">
-          <div>
-            <h2 className="font-bold w-full md:w-[30%] text-4xl py-4">
-              My Orders
-            </h2>
-            <hr className="border-primary-DEFUAULT" />
-          </div>
-          <div className="flex w-full items-center p-2  font-bold text-xl text-white">
-            <div className="md:w-1/3">Order Id</div>
-            <div className="w-1/6">Quantity</div>
-            <div className="w-1/6">Status</div>
-            <div className="w-1/3">Date</div>
-          </div>
-          {wallet.address ? (
-            orderLists.length > 0 ? (
-              orderLists.map((orderItem, index) => {
-                return <OrderItem key={index} orderItem={orderItem} />;
-              })
-            ) : (
-              <div className="text-center py-6 text-xl">
-                There is no orders you created
-              </div>
-            )
-          ) : (
-            <div className="text-center py-6 text-xl">
-              Please connect your wallet
-            </div>
-          )}
-        </div>
+        <OrderList orderLists={orderLists} address={wallet.address} />
       </div>
 
       <OrderModal
