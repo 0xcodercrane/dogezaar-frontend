@@ -18,6 +18,7 @@ import OrderModal from "@/components/LaunchPad/OrderModal";
 import { useDisclosure } from "@nextui-org/react";
 import OrderItem from "@/components/LaunchPad/OrderItem";
 import OrderList from "@/components/LaunchPad/OrderList";
+import usePayDoge from "@/hooks/usePayDoge";
 
 const price = 0.0023;
 export default function LaunchPad() {
@@ -46,7 +47,7 @@ export default function LaunchPad() {
   });
   const wallet = useAppSelector((state: RootState) => state?.wallet);
   const [orderInfo, setOrderInfo] = useState<TOrderInfo>();
-  const [receivedAddress, setReceivedAddress] = useState(wallet?.address || "");
+  const [receivedAddress, setReceivedAddress] = useState(wallet.address || "");
   const [orderLists, setOrderLists] = useState<TOrderInfo[]>([]);
   const intervalRef = useRef<NodeJS.Timeout>();
 
@@ -68,7 +69,7 @@ export default function LaunchPad() {
 
     fetchOrderLists();
     return () => clearInterval(intervalRef.current);
-  }, []);
+  }, [wallet.address]);
 
   function fetchOrderData(orderId) {
     intervalRef.current = setInterval(async () => {

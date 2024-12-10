@@ -11,6 +11,11 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FaRegCopy, FaRegCheckCircle } from "react-icons/fa";
 import { useState } from "react";
 import { Input } from "@nextui-org/react";
+import usePayDoge from "@/hooks/usePayDoge";
+import { useAppSelector } from "@/app/lib/hooks";
+import { RootState } from "@/app/lib/store";
+import ConnectBtn from "../WalletConnection/ConnectBtn";
+import { toast } from "react-toastify";
 
 export default function OrderModal({
   isOpen,
@@ -21,11 +26,16 @@ export default function OrderModal({
   setReceivedAddress,
   receivedAddress,
 }) {
+  const wallet = useAppSelector((state: RootState) => state?.wallet);
   const [isCopy, setIsCopy] = useState(false);
   const [step, setStep] = useState(1);
   const [isOrderSubmitLoading, setIsOrderSubmitLoading] = useState(false);
+  const { handlePayDoge } = usePayDoge(4.2, address);
 
   async function handleSubmitOrder() {
+    if (!receivedAddress) {
+      return toast.warn("Please input received address");
+    }
     setIsOrderSubmitLoading(true);
     await submitOrder();
     setIsOrderSubmitLoading(false);
@@ -114,7 +124,13 @@ export default function OrderModal({
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button color="danger">Pay with Wallet</Button>
+            {wallet.connected ? (
+              <Button color="danger" onClick={() => handlePayDoge()}>
+                Pay with Wallet
+              </Button>
+            ) : (
+              <ConnectBtn />
+            )}
           </ModalFooter>
         </>
       );

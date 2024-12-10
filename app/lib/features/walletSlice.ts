@@ -26,10 +26,12 @@ export const walletSlice = createAppSlice({
       action: PayloadAction<{
         connected: boolean;
         address: string;
+        myDoge: any;
       }>
     ) => {
       state.connected = action.payload.connected;
       state.address = action.payload.address;
+      state.myDoge = action.payload.myDoge
     },
     disconnectWallet: (state) => {
       state.myDoge = {};
