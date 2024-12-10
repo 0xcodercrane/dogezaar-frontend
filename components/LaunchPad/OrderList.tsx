@@ -12,13 +12,51 @@ export default function OrderList({
   address: string;
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [seletedItem, setSelectedItem] = useState<TOrderInfo>();
+  const [selectedItem, setSelectedItem] = useState<TOrderInfo>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedOrders = orderLists.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(orderLists.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="w-4/5 md:w-2/3 p-8 ">
-      <div>
+      <div className="flex justify-between items-center">
         <h2 className="font-bold w-full md:w-[30%] text-4xl py-4">My Orders</h2>
-        <hr className="border-primary-DEFUAULT" />
+        {orderLists.length > itemsPerPage && (
+          <div className="flex justify-between gap-3 items-center">
+            <button
+              className="bg-primary-DEFUAULT rounded-md px-4 py-2 cursor-pointer hover:bg-gray-600"
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <button
+              className="bg-primary-DEFUAULT rounded-md px-4 py-2 cursor-pointer hover:bg-gray-600"
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
+      <hr className="border-primary-DEFUAULT" />
       <div className="flex w-full items-center p-2  font-bold text-xl text-white">
         <div className="md:w-1/3">Order Id</div>
         <div className="w-1/6">Quantity</div>
@@ -27,14 +65,14 @@ export default function OrderList({
       </div>
       {address ? (
         orderLists.length > 0 ? (
-          orderLists.map((orderItem, index) => {
+          paginatedOrders.map((orderItem, index) => {
             return (
               <OrderItem
                 key={index}
                 orderItem={orderItem}
                 handleClick={onOpen}
                 setSelectedItem={setSelectedItem}
-                selectedItem={seletedItem}
+                selectedItem={selectedItem}
               />
             );
           })
@@ -48,11 +86,11 @@ export default function OrderList({
           Please connect your wallet
         </div>
       )}
-      {seletedItem && (
+      {selectedItem && (
         <OrderStatusModal
           isOpen={isOpen}
           onOpenChange={onOpenChange}
-          orderInfo={seletedItem}
+          orderInfo={selectedItem}
         />
       )}
     </div>
