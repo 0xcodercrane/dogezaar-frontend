@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { makeStore, AppStore } from "@/app/lib/store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
+import { WalletProvider } from "@/context/wallet";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   const storeRef = useRef<AppStore>();
@@ -18,10 +19,12 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <Provider store={storeRef.current}>
       <PersistGate loading={null} persistor={persistorRef.current}>
-        <NextUIProvider>{children}</NextUIProvider>
+        <WalletProvider>
+          <NextUIProvider>{children}</NextUIProvider>
+        </WalletProvider>
       </PersistGate>
     </Provider>
   );
 };
 
-export default Providers
+export default Providers;
