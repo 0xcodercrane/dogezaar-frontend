@@ -1,15 +1,14 @@
+import { useState, useContext } from "react";
 import { TOrderInfo } from "@/types/lauchpad.type";
 import OrderItem from "./OrderItem";
 import OrderStatusModal from "./OrderStatusModal";
 import { useDisclosure } from "@nextui-org/react";
-import { useState } from "react";
+import { WalletContext } from "@/context/wallet";
 
 export default function OrderList({
   orderLists,
-  address,
 }: {
   orderLists: TOrderInfo[];
-  address: string;
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedItem, setSelectedItem] = useState<TOrderInfo>();
@@ -20,6 +19,8 @@ export default function OrderList({
   const endIndex = startIndex + itemsPerPage;
   const paginatedOrders = orderLists.slice(startIndex, endIndex);
   const totalPages = Math.ceil(orderLists.length / itemsPerPage);
+
+  const { isConnected } = useContext(WalletContext);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -63,7 +64,7 @@ export default function OrderList({
         <div className="w-1/6">Status</div>
         <div className="w-1/3">Date</div>
       </div>
-      {address ? (
+      {isConnected ? (
         orderLists.length > 0 ? (
           paginatedOrders.map((orderItem, index) => {
             return (
@@ -89,7 +90,12 @@ export default function OrderList({
       {selectedItem && (
         <OrderStatusModal
           isOpen={isOpen}
-          onOpenChange={onOpenChange}
+          onOpenChange={() => {
+            onOpenChange();
+            if (isOpen) {
+              setSelectedItem(undefined);
+            }
+          }}
           orderInfo={selectedItem}
         />
       )}

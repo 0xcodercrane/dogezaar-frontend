@@ -13,6 +13,7 @@
     "@reduxjs/toolkit": "^2.3.0",
     "@tanstack/react-form": "^0.36.0",
     "@tanstack/valibot-form-adapter": "^0.35.0",
+    "@wallet-standard/react": "^1.0.0",
     "axios": "^1.7.7",
     "framer-motion": "^11.11.17",
     "moment": "^2.30.1",
