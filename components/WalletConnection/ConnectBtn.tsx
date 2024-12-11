@@ -29,7 +29,7 @@ export default function ConnectBtn() {
     <div>
       {!isConnected ? (
         <Button
-          onPress={connectWallet}
+          onPress={() => connectWallet()}
           className="border-2 border-solid border-white rounded-lg py-2"
         >
           Connect Wallet

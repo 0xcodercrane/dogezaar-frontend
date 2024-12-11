@@ -1,3 +1,4 @@
+import { useState, useEffect, useContext } from "react";
 import {
   Modal,
   ModalContent,
@@ -9,13 +10,10 @@ import {
 import { QRCode } from "react-qrcode-logo";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FaRegCopy, FaRegCheckCircle } from "react-icons/fa";
-import { useState, useEffect } from "react";
 import { Input } from "@nextui-org/react";
-import usePayDoge from "@/hooks/usePayDoge";
-import { useAppSelector } from "@/app/lib/hooks";
-import { RootState } from "@/app/lib/store";
 import ConnectBtn from "../WalletConnection/ConnectBtn";
 import { toast } from "react-toastify";
+import { WalletContext } from "@/context/wallet";
 
 export default function OrderModal({
   isOpen,
@@ -26,11 +24,10 @@ export default function OrderModal({
   setReceivedAddress,
   receivedAddress,
 }) {
-  const wallet = useAppSelector((state: RootState) => state?.wallet);
   const [isCopy, setIsCopy] = useState(false);
   const [step, setStep] = useState(1);
   const [isOrderSubmitLoading, setIsOrderSubmitLoading] = useState(false);
-  const { handlePayDoge } = usePayDoge(4.2, address);
+  const wallet = useContext(WalletContext);
 
   async function handleSubmitOrder() {
     if (!receivedAddress) {
@@ -130,8 +127,11 @@ export default function OrderModal({
             </div>
           </ModalBody>
           <ModalFooter>
-            {wallet.connected ? (
-              <Button color="danger" onClick={() => handlePayDoge()}>
+            {wallet.isConnected ? (
+              <Button
+                color="danger"
+                onClick={() => wallet.PayDoge(4.2, receivedAddress )}
+              >
                 Pay with Wallet
               </Button>
             ) : (

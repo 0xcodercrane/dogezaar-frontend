@@ -16,9 +16,7 @@ import { useAppSelector } from "@/app/lib/hooks";
 import { RootState } from "@/app/lib/store";
 import OrderModal from "@/components/LaunchPad/OrderModal";
 import { useDisclosure } from "@nextui-org/react";
-import OrderItem from "@/components/LaunchPad/OrderItem";
 import OrderList from "@/components/LaunchPad/OrderList";
-import usePayDoge from "@/hooks/usePayDoge";
 
 const price = 0.0023;
 export default function LaunchPad() {
@@ -225,7 +223,7 @@ export default function LaunchPad() {
             </div>
           </div>
         </div>
-        <OrderList orderLists={orderLists} address={wallet.address} />
+        <OrderList orderLists={orderLists} />
       </div>
 
       <OrderModal

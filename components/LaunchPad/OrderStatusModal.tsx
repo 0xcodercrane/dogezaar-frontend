@@ -1,3 +1,4 @@
+import { useState, useContext } from "react";
 import {
   Modal,
   ModalContent,
@@ -9,13 +10,11 @@ import {
 import { QRCode } from "react-qrcode-logo";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FaRegCopy, FaRegCheckCircle } from "react-icons/fa";
-import {  useState } from "react";
-import usePayDoge from "@/hooks/usePayDoge";
+import { WalletContext } from "@/context/wallet";
 
 export default function OrderStatusModal({ isOpen, onOpenChange, orderInfo }) {
   const [isCopy, setIsCopy] = useState(false);
-
-  const { handlePayDoge } = usePayDoge(4.2, orderInfo.payAddress);
+  const wallet = useContext(WalletContext);
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
@@ -79,7 +78,10 @@ export default function OrderStatusModal({ isOpen, onOpenChange, orderInfo }) {
                 Close
               </Button>
               {orderInfo.status === "pending" && (
-                <Button color="danger" onClick={handlePayDoge}>
+                <Button
+                  color="danger"
+                  onClick={() => wallet.PayDoge(4.1, orderInfo.payAddress )}
+                >
                   Pay with Wallet
                 </Button>
               )}
