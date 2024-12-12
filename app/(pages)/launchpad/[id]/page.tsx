@@ -93,7 +93,7 @@ export default function LaunchPad() {
     if (minted === 0) {
       return 0;
     } else {
-      let calc = (minted / collectionInfo.totalSupply) * 100;
+      const calc = (minted / collectionInfo.totalSupply) * 100;
       return calc.toFixed(2);
     }
   }, [minted]);
