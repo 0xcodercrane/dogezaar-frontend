@@ -22,6 +22,7 @@ const price = 0.0023;
 export default function LaunchPad() {
   const { id } = useParams();
   const [count, setCount] = useState<number>(1);
+
   const [collectionInfo, setCollectionInfo] = useState<TCollection>({
     id: 0,
     name: "",
@@ -43,6 +44,7 @@ export default function LaunchPad() {
     createdAt: "",
     updatedAt: "",
   });
+  const [minted, setMinted] = useState(collectionInfo.minted);
   const wallet = useAppSelector((state: RootState) => state?.wallet);
   const [orderInfo, setOrderInfo] = useState<TOrderInfo>();
   const [receivedAddress, setReceivedAddress] = useState(wallet.address || "");
@@ -88,12 +90,13 @@ export default function LaunchPad() {
   }
 
   const mintedPercent = useMemo(() => {
-    if (collectionInfo.minted === 0) {
+    if (minted === 0) {
       return 0;
     } else {
-      return (collectionInfo.minted / collectionInfo.totalSupply) * 100;
+      let calc = (minted / collectionInfo.totalSupply) * 100;
+      return calc.toFixed(2);
     }
-  }, [collectionInfo]);
+  }, [minted]);
 
   async function fetchCollectionData(id) {
     try {
@@ -119,11 +122,8 @@ export default function LaunchPad() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     if (/^\d*$/.test(inputValue)) {
-      if (
-        Number(inputValue) >
-        collectionInfo.totalSupply - collectionInfo.minted
-      )
-        setCount(collectionInfo.totalSupply - collectionInfo.minted);
+      if (Number(inputValue) > collectionInfo.totalSupply - minted)
+        setCount(collectionInfo.totalSupply - minted);
       else setCount(Number(inputValue));
     }
   };
@@ -140,6 +140,7 @@ export default function LaunchPad() {
       if (response.status === 200) {
         setOrderInfo(response.data);
         fetchOrderData(response.data.id);
+        setMinted((prevState) => prevState + count);
       }
     } catch (error) {
       console.log(error);
@@ -210,18 +211,17 @@ export default function LaunchPad() {
             <div className="flex flex-col gap-2">
               <div className="h-4 rounded-md overflow-hidden w-full bg-primary-DEFUAULT">
                 <div
-                  className={
-                    mintedPercent
-                      ? `w-[${mintedPercent}%] rounded-md bg-white h-full`
-                      : `w-0`
-                  }
+                  className="rounded-md bg-white h-full"
+                  style={{
+                    width: `${mintedPercent || 0}%`, // Dynamically set width
+                  }}
                 ></div>
               </div>
               <div className="flex justify-between text-lg ">
                 <span>Total Minted</span>
                 <div>
-                  <span className="text-white mr-2">{mintedPercent}</span>(
-                  {collectionInfo.minted}/{collectionInfo.totalSupply})
+                  <span className="text-white mr-2">{mintedPercent}%</span>(
+                  {minted}/{collectionInfo.totalSupply})
                 </div>
               </div>
             </div>
