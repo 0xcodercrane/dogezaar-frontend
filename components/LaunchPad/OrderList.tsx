@@ -1,9 +1,10 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { TOrderInfo } from "@/types/lauchpad.type";
 import OrderItem from "./OrderItem";
 import OrderStatusModal from "./OrderStatusModal";
 import { useDisclosure } from "@nextui-org/react";
 import { WalletContext } from "@/context/wallet";
+import { AxiosInstance } from "@/utils/axios";
 
 export default function OrderList({
   orderLists,
@@ -14,6 +15,7 @@ export default function OrderList({
   const [selectedItem, setSelectedItem] = useState<TOrderInfo>();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -21,6 +23,28 @@ export default function OrderList({
   const totalPages = Math.ceil(orderLists.length / itemsPerPage);
 
   const { isConnected } = useContext(WalletContext);
+
+  useEffect(() => {
+    if (!selectedItem) return;
+
+    intervalRef.current = setInterval(async () => {
+      try {
+        const response = await AxiosInstance.get(
+          `/apis/order/getOrderById/${selectedItem.id}`
+        );
+        setSelectedItem(response.data);
+      } catch (error) {
+        console.error("Error checking order status:", error);
+      }
+    }, 10000);
+    
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [selectedItem]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -32,6 +56,16 @@ export default function OrderList({
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+  };
+
+  const handleModalClose = () => {
+    // Clear interval and reset selectedItem when modal closes
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setSelectedItem(undefined);
+    onOpenChange(); // Toggle modal state
   };
 
   return (
@@ -58,7 +92,7 @@ export default function OrderList({
         )}
       </div>
       <hr className="border-primary-DEFUAULT" />
-      <div className="flex w-full items-center p-2  font-bold text-xl text-white">
+      <div className="flex w-full items-center p-2 font-bold text-xl text-white">
         <div className="md:w-1/3">Order Id</div>
         <div className="w-1/6">Quantity</div>
         <div className="w-1/6">Status</div>
@@ -90,12 +124,7 @@ export default function OrderList({
       {selectedItem && (
         <OrderStatusModal
           isOpen={isOpen}
-          onOpenChange={() => {
-            onOpenChange();
-            if (isOpen) {
-              setSelectedItem(undefined);
-            }
-          }}
+          onOpenChange={handleModalClose}
           orderInfo={selectedItem}
         />
       )}

@@ -64,7 +64,7 @@ export default function LaunchPad() {
         }
       } catch (error) {}
     };
-    setReceivedAddress(wallet.address)
+    setReceivedAddress(wallet.address);
 
     fetchOrderLists();
     return () => clearInterval(intervalRef.current);
@@ -81,6 +81,10 @@ export default function LaunchPad() {
         console.error("Error checking order status:", error);
       }
     }, 10000);
+  }
+
+  function stopInterval() {
+    clearInterval(intervalRef.current);
   }
 
   const mintedPercent = useMemo(() => {
@@ -104,7 +108,7 @@ export default function LaunchPad() {
 
   useEffect(() => {
     if (orderInfo?.status !== "pending") {
-      clearInterval(intervalRef.current);
+      stopInterval();
     }
   }, [orderInfo?.status]);
 
