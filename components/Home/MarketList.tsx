@@ -53,7 +53,7 @@ export default function CollectionList({
         ? marketlists
             .slice(0, itemsPerPage)
             .map((marketlist, index) => (
-              <MarketListItem key={index} marketlist={marketlist} />
+              <MarketListItem key={index} index={index + 1 } marketlist={marketlist} />
             ))
         : Array.from({ length: 4 }).map((_, index) => (
             <SkeletonItem key={index} />
