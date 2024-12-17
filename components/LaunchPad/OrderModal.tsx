@@ -19,6 +19,7 @@ export default function OrderModal({
   isOpen,
   onOpenChange,
   address,
+  price,
   amount,
   submitOrder,
   setReceivedAddress,
@@ -56,11 +57,11 @@ export default function OrderModal({
             </div>
             <div className="flex items-center justify-between">
               <p>Amount:</p>
-              <p>4</p>
+              <p>{amount}</p>
             </div>
             <div className="flex items-center justify-between">
               <p>Price:</p>
-              <p>5.3 Doge</p>
+              <p>{price} Doge</p>
             </div>
             <div>
               <Input
@@ -105,7 +106,7 @@ export default function OrderModal({
             </div>
             <div className="text-center">
               <p className="text-lg">
-                Please send {amount} Doge to this address{" "}
+                Please send {price} Doge to this address{" "}
               </p>
               <div className="flex gap-3 justify-center items-center">
                 <p className="text-white">{address}</p>
@@ -130,7 +131,7 @@ export default function OrderModal({
             {wallet.isConnected ? (
               <Button
                 color="danger"
-                onClick={() => wallet.PayDoge(4.2, receivedAddress )}
+                onClick={() => wallet.PayDoge(4.2, receivedAddress)}
               >
                 Pay with Wallet
               </Button>

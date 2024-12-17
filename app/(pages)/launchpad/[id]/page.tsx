@@ -18,7 +18,6 @@ import OrderModal from "@/components/LaunchPad/OrderModal";
 import { useDisclosure } from "@nextui-org/react";
 import OrderList from "@/components/LaunchPad/OrderList";
 
-const price = 0.0023;
 export default function LaunchPad() {
   const { id } = useParams();
   const [count, setCount] = useState<number>(1);
@@ -148,9 +147,9 @@ export default function LaunchPad() {
   };
 
   return (
-    <div className="bg-background pt-[200px] flex items-center">
+    <div className="bg-background pt-[100px] flex items-center">
       <div className="w-full flex flex-col items-center justify-center gap-12">
-        <div className="grid w-4/5 md:w-2/3 grid-cols-1 px-8 md:grid-cols-2 gap-20">
+        <div className="grid w-full lg:w-2/3 grid-cols-1 px-8 md:grid-cols-2 gap-20">
           <div className="w-full h-[400px] sm:h-[500px] bg-primary-DEFUAULT rounded-md overflow-hidden">
             <Image
               src={collectionInfo.thumbnail}
@@ -190,7 +189,7 @@ export default function LaunchPad() {
             <div className="bg-primary-DEFUAULT p-4 rounded-lg">
               <p className="text-3xl text-white">Price</p>
               <div className="flex items-center">
-                <h3 className="text-2xl font-bold w-1/3">${price * count}</h3>
+                <h3 className="text-2xl font-bold w-1/3">${collectionInfo.price * count}</h3>
                 <input
                   type="number"
                   step={1}
@@ -234,7 +233,8 @@ export default function LaunchPad() {
         isOpen={isOpen}
         onOpenChange={onOpenChange}
         address={orderInfo?.payAddress || ""}
-        amount={orderInfo?.price || 0}
+        price={orderInfo?.price || 0}
+        amount={count}
         submitOrder={handleMint}
         setReceivedAddress={setReceivedAddress}
         receivedAddress={receivedAddress}

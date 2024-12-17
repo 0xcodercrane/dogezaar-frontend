@@ -261,7 +261,7 @@ export default function Forms() {
                 children={(field: any) => {
                   const { state, name, handleBlur, handleChange } = field;
                   return (
-                    <div className="flex flex-col gam-1">
+                    <div className="flex flex-col gap-1">
                       <label
                         htmlFor={name}
                         className="text-[20px] text-[#999] font-bold"
@@ -290,7 +290,7 @@ export default function Forms() {
                 children={(field: any) => {
                   const { state, name, handleBlur, handleChange } = field;
                   return (
-                    <div className="flex flex-col gam-1">
+                    <div className="flex flex-col gap-1">
                       <label
                         htmlFor={name}
                         className="text-[20px] text-[#999] font-bold"
@@ -312,8 +312,7 @@ export default function Forms() {
                   );
                 }}
               />
-              <div className="flex gap-4">
-                <informationForm.Field
+              <informationForm.Field
                   name="price"
                   validators={{
                     onChange: informationSchema.entries.price,
@@ -350,7 +349,6 @@ export default function Forms() {
                     );
                   }}
                 />
-              </div>
               <div className="flex flex-col gap-4">
                 <informationForm.Field
                   name="thumbnail"
@@ -738,17 +736,17 @@ export default function Forms() {
               </div>
             </div>
             <div className="flex flex-col gap-4">
-              <div className="flex justify-between">
+              <div className=" flex justify-between">
                 <p className="text-[#999] font-bold text-2xl bg-primary-DEFUAULT">
                   Inscription JSON file
                 </p>
-                <div className="border-[#999] px-[10px]  rounded-full border-2 border-solid">
+                <div className="border-[#999] px-[10px]  rounded-full border-2 border-solid flex items-center">
                   <a
                     href="/download/format.json"
                     className="flex items-center gap-2 leading-8"
                     download
                   >
-                    Download Template .json
+                    <span className="hidden sm:block">Download Template .json</span>
                     <HiOutlineDownload />
                   </a>
                 </div>
@@ -807,9 +805,9 @@ export default function Forms() {
                     <div>
                       <div className="flex flex-col gap-3">
                         <p>
-                          Please upload your inscriptions list for your Ordinals
-                          collection. Please ensure that it&apo;s valid JSON
-                          formatting,
+                          {`Please upload your inscriptions list for your Ordinals
+                          collection. Please ensure that it's valid JSON
+                          formatting,`}
                         </p>
                         <div className="p-3 rounded-md border-[1px] h-[300] flex justify-center items-center border-[#5d5959] cursor-pointer">
                           <FileUpload

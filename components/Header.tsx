@@ -1,31 +1,80 @@
-import Link from "next/link";
+"use client";
+// import Link from "next/link";
+import { useState } from "react";
 import { Container } from "./Container";
-import Button from "./UI/Button";
 import ConnectBtn from "./WalletConnection/ConnectBtn";
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  NavbarMenuToggle,
+  NavbarMenu,
+  NavbarMenuItem,
+  Link,
+  Button,
+} from "@nextui-org/react";
 
 export default function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuItems = [
+    { name: "Home", link: "/" },
+    { name: "Creator", link: "/creators" },
+  ];
+
   return (
-    <header className="absolute top-0 w-full z-10">
-      <Container padding>
-        <div className="flex justify-between items-center h-[--header-height] p-5 ">
+    <Navbar onMenuOpenChange={setIsMenuOpen}>
+      <NavbarContent>
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="sm:hidden"
+        />
+        <NavbarBrand>
           <div className="font-bold text-[42px]">
             <Link href="/">
-              <h1>Doginal Bot</h1>
+              <h1 className="leading-8 text-[32px] sm:text-[40px]">Dogezaar</h1>
             </Link>
           </div>
-          <div className="flex items-center gap-6">
-            <div className="flex gap-5 text-2xl">
-              <Link className="hover:text-white duration-200" href="/">
-                Home
-              </Link>
-              <Link className="hover:text-white duration-200" href="/creators">
-                Creator
-              </Link>
-            </div>
-            <ConnectBtn />
-          </div>
-        </div>
-      </Container>
-    </header>
+        </NavbarBrand>
+      </NavbarContent>
+
+      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+        <NavbarItem>
+          <Link className="hover:text-white duration-200" href="/">
+            Home
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link className="hover:text-white duration-200" href="/creators">
+            Creator
+          </Link>
+        </NavbarItem>
+      </NavbarContent>
+      <NavbarContent justify="end">
+        <NavbarItem>
+          <ConnectBtn />
+        </NavbarItem>
+      </NavbarContent>
+      <NavbarMenu>
+        {menuItems.map((item, index) => (
+          <NavbarMenuItem key={`${item}-${index}`}>
+            <Link
+              className="w-full"
+              color={
+                index === 2
+                  ? "primary"
+                  : index === menuItems.length - 1
+                  ? "danger"
+                  : "foreground"
+              }
+              href={item.link}
+              size="lg"
+            >
+              {item.name}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
+    </Navbar>
   );
 }
