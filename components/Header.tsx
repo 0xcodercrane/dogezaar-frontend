@@ -1,7 +1,6 @@
 "use client";
 // import Link from "next/link";
 import { useState } from "react";
-import { Container } from "./Container";
 import ConnectBtn from "./WalletConnection/ConnectBtn";
 import {
   Navbar,
@@ -14,6 +13,7 @@ import {
   Link,
   Button,
 } from "@nextui-org/react";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +21,7 @@ export default function Header() {
     { name: "Home", link: "/" },
     { name: "Creator", link: "/creators" },
   ];
+  const pathName = usePathname();
 
   return (
     <Navbar onMenuOpenChange={setIsMenuOpen}>
@@ -40,12 +41,20 @@ export default function Header() {
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
-          <Link className="hover:text-white duration-200" href="/">
+          <Link
+            className="hover:text-danger text-2xl duration-200"
+            color={pathName === "/" ? "danger" : "foreground"}
+            href="/"
+          >
             Home
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link className="hover:text-white duration-200" href="/creators">
+          <Link
+            className="hover:text-danger text-2xl duration-200"
+            color={pathName === "/creators" ? "danger" : "foreground"}
+            href="/creators"
+          >
             Creator
           </Link>
         </NavbarItem>
@@ -60,13 +69,7 @@ export default function Header() {
           <NavbarMenuItem key={`${item}-${index}`}>
             <Link
               className="w-full"
-              color={
-                index === 2
-                  ? "primary"
-                  : index === menuItems.length - 1
-                  ? "danger"
-                  : "foreground"
-              }
+              color={pathName === item.link ? "danger" : "foreground"}
               href={item.link}
               size="lg"
             >

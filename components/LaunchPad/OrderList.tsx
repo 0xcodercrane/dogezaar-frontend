@@ -69,7 +69,7 @@ export default function OrderList({
   };
 
   return (
-    <div className="w-4/5 md:w-2/3 p-8 ">
+    <div className="w-full md:w-2/3 p-8 ">
       <div className="flex justify-between items-center">
         <h2 className="font-bold w-full md:w-[30%] text-4xl py-4">My Orders</h2>
         {orderLists.length > itemsPerPage && (
