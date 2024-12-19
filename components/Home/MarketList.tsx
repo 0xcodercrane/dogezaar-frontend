@@ -21,7 +21,7 @@ export default function CollectionList({
   const [floorPeriod, setFloorPeriod] = useState<string>('1d')
 
   return (
-    <div className='p-6'>
+    <div>
       <div className='my-10 flex flex-col justify-between md:flex-row items-center'>
         <h2 className='font-bold w-full md:w-[30%] text-4xl'>Recent Collections</h2>
         <div className='w-full md:w-[30%] flex gap-2 justify-start md:justify-end'>
@@ -31,7 +31,7 @@ export default function CollectionList({
                 floorPeriod === item.label
                   ? 'bg-gray-600'
                   : 'bg-primary-DEFUAULT'
-              } rounded-md px-4 py-2 cursor-pointer hover:bg-gray-600`}
+              } rounded-md px-3 sm:px-4 py-2 cursor-pointer hover:bg-gray-600`}
               onClick={() => setFloorPeriod(item.label)}
               key={index}
             >

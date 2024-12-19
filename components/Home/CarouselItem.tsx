@@ -12,7 +12,7 @@ export default function CarouselItem(props: CarouselItemProps) {
     <div>
       <Link href={props.url} className="w-full">
         <div className="group">
-          <div className="mx-4 bg-primary-DEFUAULT rounded-md overflow-hidden relative">
+          <div className="bg-primary-DEFUAULT rounded-md overflow-hidden relative">
             <Image
               width={100}
               height={100}
@@ -29,7 +29,7 @@ export default function CarouselItem(props: CarouselItemProps) {
                 {props.name}
               </h2>
               <div>
-                <div className="px-4 group-hover:h-16 h-0 flex justify-center items-center overflow-hidden duration-500 my-2">
+                <div className="sm:px-4 group-hover:h-12 h-0 flex justify-center items-center overflow-hidden duration-500 my-2">
                   <button className="bg-[#f71f71] overflow-hidden w-full  px-4 py-2 rounded-md text-white">
                     Launch Pad
                   </button>

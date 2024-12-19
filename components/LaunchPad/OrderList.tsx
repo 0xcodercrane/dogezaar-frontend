@@ -69,7 +69,7 @@ export default function OrderList({
   };
 
   return (
-    <div className="w-full md:w-2/3 p-8 ">
+    <div className="w-full lg:w-4/5 xl:w-2/3 p-8 ">
       <div className="flex justify-between items-center">
         <h2 className="font-bold w-full md:w-[30%] text-4xl py-4">My Orders</h2>
         {orderLists.length > itemsPerPage && (
@@ -92,11 +92,11 @@ export default function OrderList({
         )}
       </div>
       <hr className="border-primary-DEFUAULT" />
-      <div className="flex w-full items-center p-2 font-bold text-xl text-white">
-        <div className="md:w-1/3">Order Id</div>
-        <div className="w-1/6">Quantity</div>
+      <div className="flex w-full gap-2 items-center p-2 font-bold text-xl text-white">
+        <div className="w-3/4 sm:w-1/2 md:w-1/3">Order Id</div>
+        <div className="hidden md:block w-1/6">Quantity</div>
         <div className="w-1/6">Status</div>
-        <div className="w-1/3">Date</div>
+        <div className="hidden sm:block w-1/3">Date</div>
       </div>
       {isConnected ? (
         orderLists.length > 0 ? (

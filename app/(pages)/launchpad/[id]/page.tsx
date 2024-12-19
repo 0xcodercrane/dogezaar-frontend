@@ -140,6 +140,7 @@ export default function LaunchPad() {
         setOrderInfo(response.data);
         fetchOrderData(response.data.id);
         setMinted((prevState) => prevState + count);
+        setOrderLists([...orderLists, response.data]);
       }
     } catch (error) {
       console.log(error);
@@ -149,7 +150,7 @@ export default function LaunchPad() {
   return (
     <div className="bg-background pt-[100px] flex items-center">
       <div className="w-full flex flex-col items-center justify-center gap-12">
-        <div className="grid w-full lg:w-2/3 grid-cols-1 px-8 md:grid-cols-2 gap-20">
+        <div className="grid w-full lg:w-4/5 xl:w-2/3 grid-cols-1 px-8 md:grid-cols-2 gap-20">
           <div className="w-full h-[400px] sm:h-[500px] bg-primary-DEFUAULT rounded-md overflow-hidden">
             <Image
               src={collectionInfo.thumbnail}
@@ -162,9 +163,6 @@ export default function LaunchPad() {
           <div className="w-full flex flex-col justify-between gap-4">
             <h2 className="text-4xl text-white">{"Doge Ordinal"}</h2>
             <div className="flex gap-2 items-center">
-              <span className="bg-primary-DEFUAULT text-xl px-4 py-1 text-white rounded-lg ">
-                Total Supply {collectionInfo.totalSupply}
-              </span>
               <div className="flex text-2xl items-center gap-3">
                 <a href={collectionInfo.website} target="_blank">
                   <BsGlobe2 className="cursor-pointer hover:text-white" />
@@ -189,7 +187,9 @@ export default function LaunchPad() {
             <div className="bg-primary-DEFUAULT p-4 rounded-lg">
               <p className="text-3xl text-white">Price</p>
               <div className="flex items-center">
-                <h3 className="text-2xl font-bold w-1/3">${collectionInfo.price * count}</h3>
+                <h3 className="text-2xl font-bold w-1/3">
+                  ${collectionInfo.price * count}
+                </h3>
                 <input
                   type="number"
                   step={1}

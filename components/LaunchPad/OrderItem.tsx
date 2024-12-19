@@ -25,13 +25,13 @@ const OrderItem = ({
   return (
     <div>
       <div
-        className="flex w-full items-center p-2 rounded-md cursor-pointer hover:bg-primary-DEFUAULT"
+        className="flex w-full items-center gap-2 p-2 rounded-md cursor-pointer hover:bg-primary-DEFUAULT"
         onClick={showModal}
       >
-        <div className="w-1/3">{orderItem.id}</div>
-        <div className="w-1/6">{orderItem.amount}</div>
-        <div className="w-1/6">{orderItem.status}</div>
-        <div className="w-1/3">{convertDate(orderItem.createdAt)}</div>
+        <div className="w-3/4 sm:w-1/2 md:w-1/3">{orderItem.id}</div>
+        <div className="hidden md:block w-1/6">{orderItem.amount}</div>
+        <div className=" w-1/6">{orderItem.status}</div>
+        <div className="hidden sm:block w-1/3">{convertDate(orderItem.createdAt)}</div>
       </div>
     </div>
   );

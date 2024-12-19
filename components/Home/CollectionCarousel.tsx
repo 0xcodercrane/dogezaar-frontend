@@ -29,7 +29,7 @@ export default function CollectionCarousel({
     },
   };
   return (
-    <Carousel responsive={responsive}>
+    <Carousel responsive={responsive} sliderClass="flex gap-2 sm:gap-4">
       {collections.length > 0 &&
         collections?.map((collection, index) => (
           <CarouselItem
