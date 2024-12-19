@@ -53,6 +53,21 @@ export default function LaunchPad() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
+    const fetchMinted = async () => {
+      try {
+        if (id) {
+          const response = await AxiosInstance.post(
+            "apis/collections/getMintedById",
+            { id: id }
+          );
+          setMinted(response.data);
+        }
+      } catch (error) {}
+    };
+    fetchMinted();
+  }, [id]);
+
+  useEffect(() => {
     const fetchOrderLists = async () => {
       try {
         if (wallet.address !== "") {
@@ -95,7 +110,7 @@ export default function LaunchPad() {
       const calc = (minted / collectionInfo.totalSupply) * 100;
       return calc.toFixed(2);
     }
-  }, [minted]);
+  }, [minted, collectionInfo.totalSupply]);
 
   async function fetchCollectionData(id) {
     try {
@@ -201,7 +216,8 @@ export default function LaunchPad() {
             </div>
             <div>
               <button
-                className="bg-[#f71f71] hover:bg-[#962651] overflow-hidden w-full text-2xl px-4 py-2 rounded-md text-white duration-200"
+                className="bg-[#f71f71] disabled:bg-gray-700 hover:bg-[#962651] overflow-hidden w-full text-2xl px-4 py-2 rounded-md text-white duration-200"
+                disabled={minted > collectionInfo.totalSupply}
                 onClick={onOpen}
               >
                 Mint
