@@ -11,23 +11,11 @@ import { toast } from "react-toastify";
 
 export const InscriptionSchema = v.array(
   v.object({
-    id: v.pipe(v.string(), v.trim()),
-    meta: v.optional(
-      v.object({
-        attributes: v.optional(
-          v.array(
-            v.object({
-              value: v.pipe(v.string(), v.trim()),
-              trait_type: v.pipe(v.string(), v.trim()),
-            })
-          )
-        ),
-        name: v.pipe(v.string(), v.trim()),
-        high_res_img_url: v.optional(
-          v.pipe(v.pipe(v.string(), v.trim()), v.url())
-        ),
-      })
-    ),
+    file: v.pipe(v.string(), v.trim(), v.url()),
+    metadata: v.object({
+      title: v.pipe(v.string(), v.trim()),
+      description: v.pipe(v.string(), v.trim()),
+    }),
   })
 );
 
@@ -94,23 +82,11 @@ export const informationSchema = v.object({
   ),
   inscriptionsData: v.array(
     v.object({
-      id: v.pipe(v.string(), v.trim()),
-      meta: v.optional(
-        v.object({
-          attributes: v.optional(
-            v.array(
-              v.object({
-                value: v.pipe(v.string(), v.trim()),
-                trait_type: v.pipe(v.string(), v.trim()),
-              })
-            )
-          ),
-          name: v.pipe(v.string(), v.trim()),
-          high_res_img_url: v.optional(
-            v.pipe(v.pipe(v.string(), v.trim()), v.url())
-          ),
-        })
-      ),
+      file: v.pipe(v.string(), v.trim(), v.url()),
+      metadata: v.object({
+        title: v.pipe(v.string(), v.trim()),
+        description: v.pipe(v.string(), v.trim()),
+      }),
     })
   ),
   inscriptionsString: v.pipe(
@@ -313,42 +289,40 @@ export default function Forms() {
                 }}
               />
               <informationForm.Field
-                  name="price"
-                  validators={{
-                    onChange: informationSchema.entries.price,
-                  }}
-                  children={(field: any) => {
-                    const { state, name, handleBlur, handleChange } = field;
+                name="price"
+                validators={{
+                  onChange: informationSchema.entries.price,
+                }}
+                children={(field: any) => {
+                  const { state, name, handleBlur, handleChange } = field;
 
-                    return (
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor={name}
-                          className="text-[20px] text-[#999] font-bold"
-                        >
-                          Price
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            id={name}
-                            value={state.value || 0}
-                            placeholder=""
-                            className="w-full border-none bg-black rounded-md p-3 outline-none"
-                            onBlur={handleBlur}
-                            onChange={(e) =>
-                              handleChange(Number(e.target.value))
-                            }
-                          />
-                          <span className="absolute right-2 translate-y-1/2">
-                            USD($)
-                          </span>
-                        </div>
-                        <FieldInfo field={field} />
+                  return (
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor={name}
+                        className="text-[20px] text-[#999] font-bold"
+                      >
+                        Price
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          id={name}
+                          value={state.value || 0}
+                          placeholder=""
+                          className="w-full border-none bg-black rounded-md p-3 outline-none"
+                          onBlur={handleBlur}
+                          onChange={(e) => handleChange(Number(e.target.value))}
+                        />
+                        <span className="absolute right-2 translate-y-1/2">
+                          USD($)
+                        </span>
                       </div>
-                    );
-                  }}
-                />
+                      <FieldInfo field={field} />
+                    </div>
+                  );
+                }}
+              />
               <div className="flex flex-col gap-4">
                 <informationForm.Field
                   name="thumbnail"
@@ -746,7 +720,9 @@ export default function Forms() {
                     className="flex items-center gap-2 leading-8"
                     download
                   >
-                    <span className="hidden sm:block">Download Template .json</span>
+                    <span className="hidden sm:block">
+                      Download Template .json
+                    </span>
                     <HiOutlineDownload />
                   </a>
                 </div>
@@ -757,19 +733,21 @@ export default function Forms() {
                   onChangeAsyncDebounceMs: 1000,
                   onChange: ({ value }: { value: string }) => {
                     if (!value) {
-                      return "Inscription data address cannot be empty";
+                      return "Inscription data cannot be empty";
                     }
 
-                    const inscriptionIdPattern = /^[a-f0-9]{64}i\d+$/;
                     let inscriptionJsonData;
 
                     try {
                       const data: TInformationSchema["inscriptionsData"] =
                         JSON.parse(value);
 
-                      data.map((i) => {
-                        if (!inscriptionIdPattern.test(i.id)) {
-                          throw new Error("Invalid inscription ID(s) found.");
+                      // Validate URL format for each file
+                      data.forEach((item) => {
+                        try {
+                          new URL(item.file);
+                        } catch {
+                          throw new Error("Invalid file URL format found");
                         }
                       });
 
@@ -777,7 +755,6 @@ export default function Forms() {
                         informationSchema.entries.inscriptionsData,
                         data
                       );
-                      // }
 
                       informationForm.setFieldValue(
                         "inscriptionsData",
@@ -788,12 +765,8 @@ export default function Forms() {
                         return "Invalid JSON format.";
                       } else if (error instanceof v.ValiError) {
                         return `${error.message}.`;
-                      } else if (
-                        error.message === "Invalid inscription ID(s) found."
-                      ) {
-                        return error.message;
                       } else {
-                        return "Invalid JSON format.";
+                        return error.message || "Invalid JSON format.";
                       }
                     }
                     return undefined;

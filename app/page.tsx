@@ -30,6 +30,8 @@ export default function Home() {
     }
   };
 
+  
+
   useEffect(() => {
     fetchMarketlists();
     fetchCollections();

@@ -1,19 +1,16 @@
 [
   {
-    "id": "3d03e90b6ee8365adf5cc174b475bb4b725b96ebee54227c61f82ce2ad343d61i0",
-    "meta": {
-      "name": "NFT #1",
-      "high_res_img_url": "https://hi_res_img.png",
-      "attributes": [
-        {
-          "trait_type": "Clan",
-          "value": "Aoi"
-        },
-        {
-          "trait_type": "Class",
-          "value": "Warrior"
-        }
-      ]
+    "file": "https://jfccetnvabkrjkwrdwyz.supabase.co/storage/v1/object/public/banner_thumbnail_images/banner-1732830992904..png",
+    "metadata": {
+      "title": "NFT #1",
+      "description": "This is a description of the NFT"
+    }
+  },
+  {
+    "file": "https://example-files.online-convert.com/document/txt/example.txt",
+    "metadata": {
+      "title": "NFT #2",
+      "description": "This is a description of the txt file"
     }
   }
 ]
