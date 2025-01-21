@@ -49,6 +49,7 @@ export default function LaunchPad() {
   const [receivedAddress, setReceivedAddress] = useState(wallet.address || "");
   const [orderLists, setOrderLists] = useState<TOrderInfo[]>([]);
   const intervalRef = useRef<NodeJS.Timeout>();
+  const [selectedItem, setSelectedItem] = useState<TOrderInfo>();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -124,7 +125,7 @@ export default function LaunchPad() {
   }
 
   useEffect(() => {
-    if (orderInfo?.status !== "pending") {
+    if (orderInfo?.status !== "cancelled") {
       stopInterval();
     }
   }, [orderInfo?.status]);
@@ -149,6 +150,7 @@ export default function LaunchPad() {
         price: collectionInfo.price,
         amount: count,
         address: receivedAddress,
+        makerAddress: wallet.address,
       };
       const response = await AxiosInstance.post("apis/order/create", data);
       if (response.status === 200) {
@@ -242,14 +244,13 @@ export default function LaunchPad() {
             </div>
           </div>
         </div>
-        <OrderList orderLists={orderLists} />
+        <OrderList orderLists={orderLists} selectedItem={selectedItem} setSelectedItem={setSelectedItem}/>
       </div>
 
       <OrderModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        address={orderInfo?.payAddress || ""}
-        price={orderInfo?.price || 0}
+        orderInfo={orderInfo}
         amount={count}
         submitOrder={handleMint}
         setReceivedAddress={setReceivedAddress}

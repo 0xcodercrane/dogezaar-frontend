@@ -18,8 +18,7 @@ import { WalletContext } from "@/context/wallet";
 export default function OrderModal({
   isOpen,
   onOpenChange,
-  address,
-  price,
+  orderInfo,
   amount,
   submitOrder,
   setReceivedAddress,
@@ -37,7 +36,7 @@ export default function OrderModal({
     setIsOrderSubmitLoading(true);
     await submitOrder();
     setIsOrderSubmitLoading(false);
-    setStep(2);
+      setStep(2);
   }
 
   useEffect(() => {
@@ -61,7 +60,7 @@ export default function OrderModal({
             </div>
             <div className="flex items-center justify-between">
               <p>Price:</p>
-              <p>{price} Doge</p>
+              <p>{orderInfo?.price} Doge</p>
             </div>
             <div>
               <Input
@@ -95,10 +94,18 @@ export default function OrderModal({
       return (
         <>
           <ModalBody>
+            <div className="flex flex-col gap-4 text-gray-00 items-center">
+              <div className="flex justify-around w-full">
+                <div>
+                  <span>Status: </span>
+                  <span className="text-white">{status}</span>
+                </div>
+              </div>
+            </div>
             <div className="flex flex-col gap-2 justify-center items-center">
               <p className="text-lg">Scan the QRCode to pay:</p>
               <QRCode
-                value={address}
+                value={orderInfo?.payAddress}
                 logoImage="/img/dogecoin-doge-logo.png"
                 logoHeight={50}
                 logoWidth={50}
@@ -106,13 +113,13 @@ export default function OrderModal({
             </div>
             <div className="text-center">
               <p className="text-lg">
-                Please send {price} Doge to this address{" "}
+                Please send {orderInfo?.price} Doge to this address{" "}
               </p>
               <div className="flex gap-3 justify-center items-center">
-                <p className="text-white">{address}</p>
+                <p className="text-white">{orderInfo?.payAddress}</p>
                 {!isCopy ? (
                   <CopyToClipboard
-                    text={address}
+                    text={orderInfo?.payAddress}
                     onCopy={() =>
                       setIsCopy((prevState) => {
                         return !prevState;
@@ -131,7 +138,7 @@ export default function OrderModal({
             {wallet.isConnected ? (
               <Button
                 color="danger"
-                onClick={() => wallet.PayDoge(4.2, receivedAddress)}
+                onClick={() => wallet.PayDoge(4.2, orderInfo?.payAddress)}
               >
                 Pay with Wallet
               </Button>

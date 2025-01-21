@@ -3,6 +3,7 @@ export type TOrderInfo = {
   collectionId: string;
   receiveAddress: string;
   payAddress: string;
+  makerAddress: string;
   amount: number;
   price: number;
   status: string;

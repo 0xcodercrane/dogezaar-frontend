@@ -11,13 +11,13 @@ const OrderItem = ({
   orderItem: TOrderInfo;
   selectedItem: TOrderInfo | undefined;
   handleClick: () => void;
-  setSelectedItem: (TOrderInfo) => void;
+  setSelectedItem: (item: TOrderInfo | undefined) => void;
 }) => {
   useEffect(() => {
     if (selectedItem) {
       handleClick();
     }
-  }, [selectedItem]);
+  }, [handleClick, selectedItem, setSelectedItem]);
 
   function showModal() {
     setSelectedItem(orderItem);

@@ -8,11 +8,14 @@ import { AxiosInstance } from "@/utils/axios";
 
 export default function OrderList({
   orderLists,
+  selectedItem,
+  setSelectedItem
 }: {
   orderLists: TOrderInfo[];
+  selectedItem: TOrderInfo | undefined;
+  setSelectedItem: (item: TOrderInfo | undefined) => void;
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [selectedItem, setSelectedItem] = useState<TOrderInfo>();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -44,7 +47,7 @@ export default function OrderList({
         intervalRef.current = null;
       }
     };
-  }, [selectedItem]);
+  }, [selectedItem, setSelectedItem]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
