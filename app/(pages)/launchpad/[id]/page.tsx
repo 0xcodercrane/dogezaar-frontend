@@ -35,7 +35,7 @@ export default function LaunchPad() {
     creatorName: "",
     creatorEmail: "",
     creatorDogeAddress: "",
-    thumbnail: "https://jfccetnvabkrjkwrdwyz.supabase.co",
+    thumbnail: "https://ojbgjrzuorvtvambufpj.supabase.co",
     banner: "",
     totalSupply: 0,
     minted: 0,
@@ -45,10 +45,12 @@ export default function LaunchPad() {
   });
   const [minted, setMinted] = useState(collectionInfo.minted);
   const wallet = useAppSelector((state: RootState) => state?.wallet);
+  console.log(wallet);
   const [orderInfo, setOrderInfo] = useState<TOrderInfo>();
   const [receivedAddress, setReceivedAddress] = useState(wallet.address || "");
   const [orderLists, setOrderLists] = useState<TOrderInfo[]>([]);
   const intervalRef = useRef<NodeJS.Timeout>();
+
   const [selectedItem, setSelectedItem] = useState<TOrderInfo>();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -90,10 +92,18 @@ export default function LaunchPad() {
   function fetchOrderData(orderId) {
     intervalRef.current = setInterval(async () => {
       try {
+        console.log("fetching the data from backend")
         const response = await AxiosInstance.get(
           `/apis/order/getOrderById/${orderId}`
         );
         setOrderInfo(response.data);
+        setOrderLists((prevLists) => {
+          console.log("Order Lists ", prevLists);
+          return prevLists.map((order) =>
+            order.id === orderId ? { ...order, status: response.data.status } : order
+          );
+        });
+
       } catch (error) {
         console.error("Error checking order status:", error);
       }
@@ -113,17 +123,6 @@ export default function LaunchPad() {
     }
   }, [minted, collectionInfo.totalSupply]);
 
-  async function fetchCollectionData(id) {
-    try {
-      const response = await AxiosInstance(`apis/collections/${id}`);
-      if (response.status === 200) {
-        setCollectionInfo(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   useEffect(() => {
     if (orderInfo?.status !== "cancelled") {
       stopInterval();
@@ -131,6 +130,17 @@ export default function LaunchPad() {
   }, [orderInfo?.status]);
 
   useEffect(() => {
+    async function fetchCollectionData(id) {
+      try {
+        const response = await AxiosInstance(`apis/collections/${id}`);
+        if (response.status === 200) {
+          setCollectionInfo(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     fetchCollectionData(id);
   }, [id]);
 
@@ -154,8 +164,13 @@ export default function LaunchPad() {
       };
       const response = await AxiosInstance.post("apis/order/create", data);
       if (response.status === 200) {
+        console.log("Response ", response.data);
         setOrderInfo(response.data);
-        fetchOrderData(response.data.id);
+        if (response.data.id) {
+          fetchOrderData(response.data.id);
+        } else {
+          console.error("Order ID not found in response data");
+        }
         setMinted((prevState) => prevState + count);
         setOrderLists([...orderLists, response.data]);
       }
@@ -219,7 +234,7 @@ export default function LaunchPad() {
             <div>
               <button
                 className="bg-[#f71f71] disabled:bg-gray-700 hover:bg-[#962651] overflow-hidden w-full text-2xl px-4 py-2 rounded-md text-white duration-200"
-                disabled={minted > collectionInfo.totalSupply}
+                disabled={minted >= collectionInfo.totalSupply}
                 onClick={onOpen}
               >
                 Mint
@@ -244,7 +259,11 @@ export default function LaunchPad() {
             </div>
           </div>
         </div>
-        <OrderList orderLists={orderLists} selectedItem={selectedItem} setSelectedItem={setSelectedItem}/>
+        <OrderList
+          orderLists={orderLists}
+          selectedItem={selectedItem}
+          setSelectedItem={setSelectedItem}
+        />
       </div>
 
       <OrderModal

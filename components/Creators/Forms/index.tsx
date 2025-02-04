@@ -807,9 +807,10 @@ export default function Forms() {
                     disabled={!canSubmit}
                     className="border-2 rounded-md border-primary px-3 py-2 w-32"
                   >
-                    {isSubmitting ? "..." : "Submit"}
+                    {isSubmitting ? "Submitting..." : "Submit"}
                   </button>
                 </div>
+
               )}
             />
           </div>

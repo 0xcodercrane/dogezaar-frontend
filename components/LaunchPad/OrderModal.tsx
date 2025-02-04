@@ -98,7 +98,7 @@ export default function OrderModal({
               <div className="flex justify-around w-full">
                 <div>
                   <span>Status: </span>
-                  <span className="text-white">{status}</span>
+                  <span className="text-white">{orderInfo?.status}</span>
                 </div>
               </div>
             </div>
