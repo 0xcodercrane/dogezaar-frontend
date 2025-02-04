@@ -45,7 +45,6 @@ export default function LaunchPad() {
   });
   const [minted, setMinted] = useState(collectionInfo.minted);
   const wallet = useAppSelector((state: RootState) => state?.wallet);
-  console.log(wallet);
   const [orderInfo, setOrderInfo] = useState<TOrderInfo>();
   const [receivedAddress, setReceivedAddress] = useState(wallet.address || "");
   const [orderLists, setOrderLists] = useState<TOrderInfo[]>([]);
@@ -92,13 +91,11 @@ export default function LaunchPad() {
   function fetchOrderData(orderId) {
     intervalRef.current = setInterval(async () => {
       try {
-        console.log("fetching the data from backend")
         const response = await AxiosInstance.get(
           `/apis/order/getOrderById/${orderId}`
         );
         setOrderInfo(response.data);
         setOrderLists((prevLists) => {
-          console.log("Order Lists ", prevLists);
           return prevLists.map((order) =>
             order.id === orderId ? { ...order, status: response.data.status } : order
           );
@@ -124,7 +121,7 @@ export default function LaunchPad() {
   }, [minted, collectionInfo.totalSupply]);
 
   useEffect(() => {
-    if (orderInfo?.status !== "cancelled") {
+    if (orderInfo?.status === "cancelled") {
       stopInterval();
     }
   }, [orderInfo?.status]);
